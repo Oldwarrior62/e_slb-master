@@ -24,7 +24,7 @@ class DailyReportNotes {
         notes: mp['notes'],
         dailyReportId: mp['dailyReportId'],
         dateCreated: mp['dateCreated'],
-        logs: lstlog(jsonDecode(mp['logs'] ?? "[]")),
+        logs: mp['logs'] == null ? [] : lstlog(jsonDecode(mp['logs'])),
         signature: mp['signature']);
   }
 
@@ -39,11 +39,7 @@ class DailyReportNotes {
 }
 
 List<Log> lstlog(List data) {
-  if (data != [])
-    return data.map((e) => Log.fromMap(e)).toList();
-  else {
-    return [];
-  }
+  return data.map((e) => Log.fromMap(e)).toList();
 }
 
 List<Map<String, dynamic>> lstlogtpmap(List<Log> data) {

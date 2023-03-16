@@ -37,7 +37,8 @@ class _NewLogEntryState extends State<NewLogEntry> {
     } else {
       final provider = BlocProvider.of<DailyReportsCubit>(context);
       String Date = DateTime.now().toString().split(' ')[0];
-      String Time = DateTime.now().toString().split(' ')[1].split('.')[0];
+      String tempTime = DateTime.now().toString().split(' ')[1].split('.')[0];
+      String Time = "${tempTime.split(':')[0]}:${tempTime.split(':')[1]}";
       DbHelper db = DbHelper.instance;
       Log log = Log(
           entryController.text,
@@ -55,14 +56,15 @@ class _NewLogEntryState extends State<NewLogEntry> {
             logs: [log],
             dateCreated: Date,
             signature: "");
+        db.insertDailyReport(dailyReport).then((value) {
+          dailyReport.dailyReportId = value;
+          alertDialog(context, "Report Added");
+        });
         provider.setDailyReports(dailyReport);
         provider.state.lstdailyreports.add(dailyReport);
         List<DailyReportNotes> templst = provider.state.lstdailyreports;
         provider.setListDailyReports(
             templst, BlocProvider.of<DailyReportsCubit>(context).state.log);
-        db.insertDailyReport(dailyReport).then((value) {
-          alertDialog(context, "Report Added");
-        });
       } else {
         provider.state.dailyReportNotes!.logs.add(log);
         provider.state.lstdailyreports

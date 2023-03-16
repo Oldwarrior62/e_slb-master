@@ -51,27 +51,37 @@ class _HeaderInfoState extends State<HeaderInfo> {
               builder: (context, state) {
             return Row(
               children: [
+                SizedBox(
+                  width: MediaQuery.of(context).size.width * 0.35,
+                ),
                 state.company != null
                     ? state.company!.image != null
-                        ? CircleAvatar(
-                            radius: 40,
-                            backgroundImage: MemoryImage(Uint8List.fromList(
-                                state.company!.image!.codeUnits)),
+                        ? Container(
+                            height: 80,
+                            width: 80,
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(99),
+                              child: Image.memory(
+                                Uint8List.fromList(
+                                    state.company!.image!.codeUnits),
+                                fit: BoxFit.cover,
+                              ),
+                            ),
                           )
-                        : Image.asset(
-                            'lib/images/logo.png',
-                            width: MediaQuery.of(context).size.width * .2,
+                        : Text(
+                            state.company!.companyName.toString(),
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontFamily:
+                                    context.watch<UserCubit>().state.font),
                           )
-                    : const Text(""),
+                    : Image.asset(
+                        'lib/images/logo.png',
+                        width: MediaQuery.of(context).size.width * .2,
+                      ),
                 const SizedBox(
                   width: 10,
                 ),
-                state.company != null
-                    ? Text(
-                        state.company!.companyName.toString(),
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      )
-                    : const Text("")
               ],
             );
           }),
@@ -82,8 +92,9 @@ class _HeaderInfoState extends State<HeaderInfo> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                '${BlocProvider.of<UserCubit>(context).state.userModel!.surname.toString()} ${BlocProvider.of<UserCubit>(context).state.userModel!.name}',
+                '${BlocProvider.of<UserCubit>(context).state.userModel!.surname.toString()}${BlocProvider.of<UserCubit>(context).state.userModel!.name?.substring(0, 1)}',
                 style: TextStyle(
+                  fontFamily: context.watch<UserCubit>().state.font,
                   fontWeight: FontWeight.bold,
                   fontSize: 14 * curScaleFactor,
                 ),
@@ -93,9 +104,9 @@ class _HeaderInfoState extends State<HeaderInfo> {
               Text(
                 date,
                 style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 14 * curScaleFactor,
-                ),
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14 * curScaleFactor,
+                    fontFamily: context.watch<UserCubit>().state.font),
               ),
             ],
           ),
@@ -108,7 +119,9 @@ class _HeaderInfoState extends State<HeaderInfo> {
               children: [
                 Text(
                   '${context.read<DailyReportsCubit>().state.weather}',
-                  style: TextStyle(fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontFamily: context.watch<UserCubit>().state.font),
                 ),
                 const SizedBox(
                   width: 10,
@@ -117,130 +130,124 @@ class _HeaderInfoState extends State<HeaderInfo> {
                   child: Text(
                     '${context.read<DailyReportsCubit>().state.location}',
                     style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 14 * curScaleFactor,
-                    ),
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14 * curScaleFactor,
+                        fontFamily: context.watch<UserCubit>().state.font),
                   ),
                 ),
               ],
             ),
           ),
         ),
-        !isopen
-            ? const Padding(padding: EdgeInsets.zero)
-            : context.watch<UserCubit>().state.islisence
-                ? Builder(builder: (context) {
-                    return Padding(
-                      padding: const EdgeInsets.only(
-                          left: 8.0, bottom: 8.0, right: 6.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Security Lisence: ${context.read<UserCubit>().state.userModel!.securityLicense.toString()}',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 14 * curScaleFactor,
-                            ),
-                          ),
-                          const SizedBox(
-                            height: 10,
-                          ),
-                          Text(
-                            'OFA: ${context.read<UserCubit>().state.userModel!.ofa.toString()}',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 14 * curScaleFactor,
-                            ),
-                          ),
-                        ],
-                      ),
-                    );
-                  })
-                : const Padding(padding: EdgeInsets.zero),
+        // !isopen
+        //     ? const Padding(padding: EdgeInsets.zero)
+        //     : context.watch<UserCubit>().state.islisence
+        //         ? Builder(builder: (context) {
+        //             return Padding(
+        //               padding: const EdgeInsets.only(
+        //                   left: 8.0, bottom: 8.0, right: 6.0),
+        //               child: Column(
+        //                 crossAxisAlignment: CrossAxisAlignment.start,
+        //                 children: [
+        //                   Text(
+        //                     'Security Lisence: ${context.read<UserCubit>().state.userModel!.securityLicense.toString()}',
+        //                     style: TextStyle(
+        //                         fontWeight: FontWeight.bold,
+        //                         fontSize: 14 * curScaleFactor,
+        //                         fontFamily:
+        //                             context.watch<UserCubit>().state.font),
+        //                   ),
+        //                   const SizedBox(
+        //                     height: 10,
+        //                   ),
+        //                   Text(
+        //                     'OFA: ${context.read<UserCubit>().state.userModel!.ofa.toString()}',
+        //                     style: TextStyle(
+        //                         fontWeight: FontWeight.bold,
+        //                         fontSize: 14 * curScaleFactor,
+        //                         fontFamily:
+        //                             context.watch<UserCubit>().state.font),
+        //                   ),
+        //                 ],
+        //               ),
+        //             );
+        //           })
+        //         : const Padding(padding: EdgeInsets.zero),
         !isopen
             ? InkWell(
                 onTap: () {
                   isopen = !isopen;
                   setState(() {});
                 },
-                child: Icon(Icons.arrow_downward))
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Icon(Icons.arrow_drop_down),
+                  ],
+                ),
+              )
             : BlocBuilder<DailyReportsCubit, DailyReportsState>(
                 builder: (context, state) {
                 return state.dailyReportNotes != null && state.isedit == false
                     ? Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.end,
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Container(
                               decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  boxShadow: [
-                                    BoxShadow(
-                                        color: Colors.grey.withOpacity(0.5),
-                                        offset: Offset(0, 7),
-                                        blurRadius: 7,
-                                        spreadRadius: 3)
-                                  ]),
+                                color: Colors.white,
+                              ),
                               child: Padding(
                                 padding: const EdgeInsets.all(8.0),
-                                child: ExpandablePanel(
-                                  header: Text(
-                                    "Notes",
-                                    style: TextStyle(
-                                        fontFamily: "Poppins",
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                  collapsed: Text(
-                                    BlocProvider.of<DailyReportsCubit>(context)
-                                                .state
-                                                .dailyReportNotes!
-                                                .notes
-                                                .toString()
-                                                .length >
-                                            50
-                                        ? BlocProvider.of<DailyReportsCubit>(
-                                                context)
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      "Notes",
+                                      style: TextStyle(
+                                        fontFamily: context
+                                            .watch<UserCubit>()
                                             .state
-                                            .dailyReportNotes!
-                                            .notes
-                                            .toString()
-                                            .substring(0, 49)
-                                        : BlocProvider.of<DailyReportsCubit>(
-                                                context)
-                                            .state
-                                            .dailyReportNotes!
-                                            .notes
-                                            .toString(),
-                                    softWrap: true,
-                                    maxLines: 2,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                  expanded: Text(
-                                    BlocProvider.of<DailyReportsCubit>(context)
-                                        .state
-                                        .dailyReportNotes!
-                                        .notes
-                                        .toString(),
-                                    softWrap: true,
-                                  ),
+                                            .font,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    Text(
+                                      BlocProvider.of<DailyReportsCubit>(
+                                              context)
+                                          .state
+                                          .dailyReportNotes!
+                                          .notes
+                                          .toString(),
+                                      style: TextStyle(
+                                          fontFamily: context
+                                              .watch<UserCubit>()
+                                              .state
+                                              .font),
+                                    ),
+                                  ],
                                 ),
                               ),
                             ),
-                            ElevatedButton(
-                                onPressed: () {
-                                  notesController.text = context
-                                      .read<DailyReportsCubit>()
-                                      .state
-                                      .dailyReportNotes!
-                                      .notes
-                                      .toString();
-                                  context
-                                      .read<DailyReportsCubit>()
-                                      .setIsEdit(true);
-                                },
-                                child: Text("Edit"))
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                ElevatedButton(
+                                    onPressed: () {
+                                      notesController.text = context
+                                          .read<DailyReportsCubit>()
+                                          .state
+                                          .dailyReportNotes!
+                                          .notes
+                                          .toString();
+                                      context
+                                          .read<DailyReportsCubit>()
+                                          .setIsEdit(true);
+                                    },
+                                    child: Text("Edit")),
+                              ],
+                            )
                           ],
                         ),
                       )
@@ -365,7 +372,12 @@ class _HeaderInfoState extends State<HeaderInfo> {
                   isopen = !isopen;
                   setState(() {});
                 },
-                child: Icon(Icons.arrow_upward),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Icon(Icons.arrow_drop_up),
+                  ],
+                ),
               )
             : const Padding(padding: EdgeInsets.zero)
       ],

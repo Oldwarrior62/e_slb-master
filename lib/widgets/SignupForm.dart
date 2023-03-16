@@ -3,9 +3,10 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_complete_guide/Comm/commHelper.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_complete_guide/Bloc/User/userCubit.dart';
 import 'package:image_picker/image_picker.dart';
-
+import '../comm/commHelper.dart';
 import '../DatabaseHandler/DbHelper.dart';
 import '../comm/genTextFormField.dart';
 import '../models/UserModel.dart';
@@ -42,7 +43,9 @@ class _SignupFormState extends State<SignupForm> {
 
     if (_formKey.currentState!.validate()) {
       if (passwd != cpasswd) {
-        //alertDialog(context, 'Password Mismatch');
+        alertDialog(context, 'Password Mismatch');
+      } else if (passwd.length != 4) {
+        alertDialog(context, "Password must be 4 digit");
       } else if (img != null) {
         _formKey.currentState?.save();
         DbHelper db = DbHelper.instance;
@@ -73,7 +76,10 @@ class _SignupFormState extends State<SignupForm> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Secure Log'),
+        title: Text(
+          'Secure Log',
+          style: TextStyle(fontFamily: context.watch<UserCubit>().state.font),
+        ),
       ),
       body: Form(
         key: _formKey,
@@ -153,9 +159,11 @@ class _SignupFormState extends State<SignupForm> {
                     ),
                     child: TextButton(
                       onPressed: signUp,
-                      child: const Text(
+                      child: Text(
                         'Signup',
-                        style: TextStyle(color: Colors.white),
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontFamily: context.watch<UserCubit>().state.font),
                       ),
                     ),
                   ),
@@ -163,11 +171,19 @@ class _SignupFormState extends State<SignupForm> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Text('Does you have account? '),
+                        Text(
+                          'Does you have account? ',
+                          style: TextStyle(
+                              fontFamily:
+                                  context.watch<UserCubit>().state.font),
+                        ),
                         TextButton(
-                          child: const Text(
+                          child: Text(
                             'Sign In',
                             selectionColor: Colors.blue,
+                            style: TextStyle(
+                                fontFamily:
+                                    context.watch<UserCubit>().state.font),
                           ),
                           onPressed: () {
                             Navigator.pushReplacement(context,

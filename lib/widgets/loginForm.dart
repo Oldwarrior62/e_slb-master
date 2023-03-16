@@ -1,6 +1,7 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_complete_guide/Bloc/DailyReportNotes/dailyreports_cubit.dart';
 import 'package:flutter_complete_guide/Bloc/User/userCubit.dart';
 import 'package:flutter_complete_guide/comm/loading.dart';
 import 'package:flutter_complete_guide/widgets/main_log_entry.dart';
@@ -26,49 +27,43 @@ class _LoginFormState extends State<LoginForm> {
   @override
   void initState() {
     super.initState();
+
+    getfont();
     dbHelper = DbHelper.instance;
+  }
+
+  getfont() async {
+    SharedPreferences sp = await SharedPreferences.getInstance();
+    bool? dyslexic = sp.getBool("dyslexic");
+    if (dyslexic != null) {
+      BlocProvider.of<UserCubit>(context).state.isDyslexic = dyslexic;
+      if (dyslexic) {
+        BlocProvider.of<UserCubit>(context).state.font = "OpenDyslexic";
+      } else {
+        BlocProvider.of<UserCubit>(context).state.font = "OpenSans";
+      }
+    } else {
+      BlocProvider.of<UserCubit>(context).state.font = "OpenSans";
+    }
   }
 
   login() async {
     String name = _conUserId.text;
     String passwd = _conPassword.text;
-
+    SharedPreferences sp = await SharedPreferences.getInstance();
     if (name.isEmpty) {
-      alertDialog(context, "Please Enter User ID");
+      alertDialog(context, "Please Enter Surname");
     } else if (passwd.isEmpty) {
       alertDialog(context, "Please Enter Password");
+    } else if (passwd.length != 4) {
+      alertDialog(context, "Password must be 4 digit");
     } else {
       loading(context);
       DbHelper db = DbHelper.instance;
-      context.read<DailyReportsCubit>().state.lstdailyreports =
-          await db.getDailyReports();
-      context.read<DailyReportsCubit>().state.tempdailyreports =
-          await db.getDailyReports();
+
       db.getLoginUser(name, passwd).then((userData) async {
         if (userData != null) {
-          db.checkNotes().then((value) {
-            if (value != null) {
-              if (value.notes != null) {
-                value.ontap = true;
-                BlocProvider.of<DailyReportsCubit>(context)
-                    .setDailyReports(value);
-              } else {
-                BlocProvider.of<DailyReportsCubit>(context)
-                    .setDailyReports(value);
-              }
-            }
-          });
-
-          SharedPreferences sp = await SharedPreferences.getInstance();
-          String? id = sp.getString('userid');
-          if (id == null) {
-            sp.setString("userid", userData.userId.toString());
-            sp.setString('securityLisence', '');
-            sp.setString('ofa', '');
-          } else {
-            userData.securityLicense = sp.getString('securityLisence');
-            userData.ofa = sp.getString("ofa");
-          }
+          await sp.setString("userData", jsonEncode(userData.toMap()));
           BlocProvider.of<UserCubit>(context).setUser(userData);
           Navigator.pop(context);
           Navigator.pushAndRemoveUntil(
@@ -90,7 +85,10 @@ class _LoginFormState extends State<LoginForm> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Secure log'),
+        title: Text(
+          'Secure log',
+          style: TextStyle(fontFamily: context.watch<UserCubit>().state.font),
+        ),
       ),
       body: Form(
         key: _formKey,
@@ -112,6 +110,7 @@ class _LoginFormState extends State<LoginForm> {
                     icon: Icons.lock,
                     hintName: 'Password',
                     isObscureText: true,
+                    inputType: TextInputType.number,
                   ),
                   Container(
                     margin: EdgeInsets.all(30.0),
@@ -132,7 +131,12 @@ class _LoginFormState extends State<LoginForm> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text('Do not have account? '),
+                        Text(
+                          'Do not have account? ',
+                          style: TextStyle(
+                              fontFamily:
+                                  context.watch<UserCubit>().state.font),
+                        ),
                         TextButton(
                           child: Text(
                             'Signup',

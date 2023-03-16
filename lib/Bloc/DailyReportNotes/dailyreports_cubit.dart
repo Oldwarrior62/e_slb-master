@@ -16,14 +16,19 @@ class DailyReportsCubit extends Cubit<DailyReportsState> {
             screenshotController: ScreenshotController()));
 
   setDailyReports(DailyReportNotes dailyReportsState) {
-    emit(state.copywith(company: dailyReportsState));
+    emit(state.copywith(dailyReportNotes: dailyReportsState));
   }
 
   setListDailyReports(List<DailyReportNotes> dailyReportsState, bool islog) {
     List<DailyReportNotes> temp = [];
     for (DailyReportNotes i in dailyReportsState) {
+      i.logs.sort((a, b) {
+        int nameComparison = a.company!.compareTo(b.company!);
+        return nameComparison;
+      });
       temp.add(i);
     }
+
     emit(state.copywith(
         tempdailyreports: temp,
         lstdailyreports: dailyReportsState,
@@ -48,13 +53,15 @@ class DailyReportsCubit extends Cubit<DailyReportsState> {
   setTempList(String text) {
     List<DailyReportNotes> temp = [];
     for (DailyReportNotes i in state.lstdailyreports) {
-      DailyReportNotes d = DailyReportNotes(
-          notes: i.notes,
-          dailyReportId: i.dailyReportId,
-          dateCreated: i.dateCreated,
-          logs: i.logs,
-          signature: i.signature);
-      temp.add(d);
+      if (i.dailyReportId != null) {
+        DailyReportNotes d = DailyReportNotes(
+            notes: i.notes,
+            dailyReportId: i.dailyReportId,
+            dateCreated: i.dateCreated,
+            logs: i.logs,
+            signature: i.signature);
+        temp.add(d);
+      }
     }
     if (state.filter) {
       for (DailyReportNotes dailyReportNotes in state.lstdailyreports) {

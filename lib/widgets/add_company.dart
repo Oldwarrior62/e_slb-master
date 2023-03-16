@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_complete_guide/Bloc/Company/company_cubit.dart';
@@ -8,7 +7,7 @@ import 'package:flutter_complete_guide/comm/commHelper.dart';
 import 'package:flutter_complete_guide/models/company_model.dart';
 import 'package:flutter_complete_guide/widgets/main_drawer.dart';
 import 'package:image_picker/image_picker.dart';
-
+import '../Bloc/User/userCubit.dart';
 import '../comm/genTextFormField.dart';
 
 class AddCompanyScreen extends StatelessWidget {
@@ -21,7 +20,11 @@ class AddCompanyScreen extends StatelessWidget {
     final companyProvider = BlocProvider.of<CompanyCubit>(context);
     XFile? img;
     return Scaffold(
-      appBar: AppBar(title: Text("Add Company")),
+      appBar: AppBar(
+          title: Text(
+        "Add Company",
+        style: TextStyle(fontFamily: context.watch<UserCubit>().state.font),
+      )),
       drawer: Drawer(
         child: MainDrawer(
           lstcompany: companyProvider.state.lstcompany ?? [],
@@ -91,14 +94,17 @@ class AddCompanyScreen extends StatelessWidget {
                   ),
                   onPressed: () async {
                     DbHelper db = DbHelper.instance;
-                    if (companyEmail.text.isNotEmpty &&
-                        context.read<CompanyCubit>().state.img != null &&
-                        companyName.text.isNotEmpty) {
+                    if (companyName.text.isNotEmpty) {
                       Company company = Company(
                           companyEmail: companyEmail.text,
                           companyName: companyName.text,
-                          image: String.fromCharCodes(
-                              File(context.read<CompanyCubit>().state.img!.path)
+                          image: context.read<CompanyCubit>().state.img == null
+                              ? null
+                              : String.fromCharCodes(File(context
+                                      .read<CompanyCubit>()
+                                      .state
+                                      .img!
+                                      .path)
                                   .readAsBytesSync()));
                       await db.insertCompanyData(company).then((value) {
                         List<Company> templst =
@@ -107,10 +113,8 @@ class AddCompanyScreen extends StatelessWidget {
                         context.read<CompanyCubit>().setlstCompany(templst);
                         alertDialog(context, "Company Added");
                       });
-                    } else if (context.read<CompanyCubit>().state.img == null) {
-                      alertDialog(context, "Select Image");
                     } else {
-                      alertDialog(context, "Fill all Fileds");
+                      alertDialog(context, "Company Name required");
                     }
                   },
                 ),

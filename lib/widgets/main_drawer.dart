@@ -7,13 +7,15 @@ import 'package:flutter_complete_guide/Bloc/Company/company_state.dart';
 import 'package:flutter_complete_guide/Bloc/User/userCubit.dart';
 
 import 'package:flutter_complete_guide/widgets/add_company.dart';
+import 'package:flutter_complete_guide/widgets/google_map.dart';
+import 'package:flutter_complete_guide/widgets/loginForm.dart';
 import 'package:flutter_complete_guide/widgets/main_log_entry.dart';
 import 'package:flutter_complete_guide/widgets/signature.dart';
 import 'package:flutter_complete_guide/widgets/updateProfile.dart';
 import 'package:flutter_complete_guide/widgets/view_notes.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../Bloc/Company/company_cubit.dart';
-import '../appendices/main_appendices.dart';
 import '../models/company_model.dart';
 
 class MainDrawer extends StatefulWidget {
@@ -24,20 +26,6 @@ class MainDrawer extends StatefulWidget {
 }
 
 class _MainDrawerState extends State<MainDrawer> {
-  // Widget _buildListTileSwitch(
-  //   String title,
-  //   String description,
-  //   bool currentValue,
-  //   Function updateValue,
-  // ) {
-  //   return SwitchListTile(
-  //     title: Text(title),
-  //     value: currentValue,
-  //     subtitle: Text(description),
-  //     onChanged: updateValue as void Function(bool)?,
-  //   );
-  // }
-
   List<DropdownMenuItem<Company>> getitems() {
     return widget.lstcompany
         .map((e) => DropdownMenuItem(
@@ -51,14 +39,14 @@ class _MainDrawerState extends State<MainDrawer> {
     return ListTile(
       leading: Icon(
         icon,
-        size: 20,
+        size: 26,
       ),
       title: Text(
         title,
         style: TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.bold,
-        ),
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+            fontFamily: context.watch<UserCubit>().state.font),
       ),
       onTap: tapHandler as void Function()?,
     );
@@ -124,6 +112,9 @@ class _MainDrawerState extends State<MainDrawer> {
                             children: [
                               Text(
                                 "${BlocProvider.of<UserCubit>(context).state.userModel!.email.toString()}",
+                                style: TextStyle(
+                                    fontFamily:
+                                        context.watch<UserCubit>().state.font),
                               ),
                             ],
                           ),
@@ -135,6 +126,9 @@ class _MainDrawerState extends State<MainDrawer> {
                             children: [
                               Text(
                                 "Name:${BlocProvider.of<UserCubit>(context).state.userModel!.name.toString()}",
+                                style: TextStyle(
+                                    fontFamily:
+                                        context.watch<UserCubit>().state.font),
                               ),
                             ],
                           ),
@@ -151,6 +145,21 @@ class _MainDrawerState extends State<MainDrawer> {
                 )
               ],
             ),
+            // Container(
+            //   height: 120,
+            //   width: double.infinity,
+            //   padding: const EdgeInsets.all(20),
+            //   alignment: Alignment.centerLeft,
+            //   color: Theme.of(context).colorScheme.secondary,
+            //   child: Text(
+            //     'Security log book',
+            //     style: TextStyle(
+            //       fontWeight: FontWeight.w900,
+            //       fontSize: 30,
+            //       color: Colors.white,
+            //     ),
+            //   ),
+            // ),
             SizedBox(
               height: 20,
             ),
@@ -191,41 +200,59 @@ class _MainDrawerState extends State<MainDrawer> {
               Navigator.of(context)
                   .pushReplacementNamed(SignatureScreen.routeName);
             }),
-            _buildListTile('Appendices', Icons.verified, () {
-              Navigator.of(context)
-                  .pushReplacementNamed(AppendicesMain.routeName);
+            _buildListTile('Get Location', Icons.map, () {
+              Navigator.of(context).pushReplacementNamed(GetLocation.routeName);
             }),
-            Container(
-              padding: const EdgeInsets.all(20),
-              child: Text(
-                'Preferances',
-                style: Theme.of(context).textTheme.titleLarge,
-              ),
-            ),
+            _buildListTile('Log Out', Icons.logout, () async {
+              SharedPreferences sp = await SharedPreferences.getInstance();
+              await sp.setString('userData', "");
+              Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(builder: (_) => LoginForm()),
+                  (Route<dynamic> route) => false);
+            }),
+            // Container(
+            //   padding: const EdgeInsets.all(20),
+            //   child: Text(
+            //     'Preferances',
+            //     style: TextStyle(
+            //         fontFamily: context.watch<UserCubit>().state.font,
+            //         fontSize: 18),
+            //   ),
+            // ),
             Expanded(
               child: ListView(
                 shrinkWrap: true,
                 physics: const BouncingScrollPhysics(),
                 children: [
-                  Builder(builder: (context) {
-                    return SwitchListTile(
-                      title: Text('Show Lisence'),
-                      onChanged: (bool value) {
-                        context.read<UserCubit>().setIsLisence(value);
-                      },
-                      value: context.watch<UserCubit>().state.islisence,
-                    );
-                  }),
-                  Builder(builder: (context) {
-                    return SwitchListTile(
-                      title: Text('Dyslexic'),
-                      subtitle: Text('May Help Reading'),
-                      onChanged: (bool value) {
-                        context.read<UserCubit>().setIsDyslexic(value);
-                      },
-                      value: context.watch<UserCubit>().state.isdyslexic!,
-                    );
-                  }),
+                  // Builder(builder: (context) {
+                  //   return SwitchListTile(
+                  //     title: Text(
+                  //       'Show Lisence',
+                  //       style: TextStyle(
+                  //           fontFamily: context.watch<UserCubit>().state.font),
+                  //     ),
+                  //     onChanged: (bool value) {
+                  //       context.read<UserCubit>().setIsLisence(value);
+                  //     },
+                  //     value: context.watch<UserCubit>().state.islisence,
+                  //   );
+                  // }),
+
+                  // Builder(builder: (context) {
+                  //   return SwitchListTile(
+                  //     title: Text(
+                  //       'Show Warning',
+                  //       style: TextStyle(
+                  //           fontFamily: context.watch<UserCubit>().state.font),
+                  //     ),
+                  //     onChanged: (bool value) {
+                  //       context.read<UserCubit>().setWarning(value);
+                  //     },
+                  //     value: context.watch<UserCubit>().state.isWarning,
+                  //   );
+                  // }),
+
                   // _buildListTileSwitch(
                   //   '24 clock',
                   //   'select 24 hour or standard time.',

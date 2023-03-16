@@ -12,6 +12,7 @@ class DailyReportsState extends Equatable {
   bool isedit, filter;
   String weather, location;
   ScreenshotController screenshotController;
+  String? currentValue;
 
   DailyReportsState(
       {this.dailyReportNotes,
@@ -22,7 +23,8 @@ class DailyReportsState extends Equatable {
       required this.weather,
       required this.location,
       required this.filter,
-      required this.screenshotController});
+      required this.screenshotController,
+      this.currentValue});
   @override
   List<Object?> get props => [
         dailyReportNotes,
@@ -33,11 +35,12 @@ class DailyReportsState extends Equatable {
         location,
         tempdailyreports,
         filter,
-        screenshotController
+        screenshotController,
+        currentValue
       ];
 
   DailyReportsState copywith(
-      {DailyReportNotes? company,
+      {DailyReportNotes? dailyReportNotes,
       List<DailyReportNotes>? lstdailyreports,
       bool? log,
       bool? isedit,
@@ -45,9 +48,10 @@ class DailyReportsState extends Equatable {
       String? weather,
       location,
       ScreenshotController? screenshotController,
-      List<DailyReportNotes>? tempdailyreports}) {
+      List<DailyReportNotes>? tempdailyreports,
+      String? currentValue}) {
     return DailyReportsState(
-        dailyReportNotes: company ?? this.dailyReportNotes,
+        dailyReportNotes: dailyReportNotes ?? this.dailyReportNotes,
         lstdailyreports: lstdailyreports ?? this.lstdailyreports,
         log: log ?? this.log,
         isedit: isedit ?? this.isedit,
@@ -55,7 +59,7 @@ class DailyReportsState extends Equatable {
         location: location ?? this.location,
         filter: filter ?? this.filter,
         tempdailyreports: tempdailyreports ?? this.tempdailyreports,
-        screenshotController:
-            screenshotController ?? this.screenshotController);
+        screenshotController: screenshotController ?? this.screenshotController,
+        currentValue: currentValue ?? this.currentValue);
   }
 }

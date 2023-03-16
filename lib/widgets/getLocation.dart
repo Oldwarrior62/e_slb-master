@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_complete_guide/Bloc/DailyReportNotes/dailyreports_cubit.dart';
+import 'package:flutter_complete_guide/Bloc/User/userCubit.dart';
+import 'package:weather/weather.dart' as wf;
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:weather/weather.dart';
@@ -39,7 +41,21 @@ Future<String> getAddressFromLatLng(
   await placemarkFromCoordinates(position.latitude, position.longitude)
       .then((List<Placemark> placemarks) {
     Placemark place = placemarks[0];
-    currentLocation = '${place.street},${place.subLocality},${place.locality}';
+    Placemark place2 = placemarks[2];
+    if (place.thoroughfare != null) {
+      if (place.thoroughfare == "") {
+        if (place2.street != place.subLocality) {
+          currentLocation =
+              "${place2.street},${place.subLocality},${place.locality},${place.administrativeArea}";
+        } else {
+          currentLocation =
+              "${placemarks[3].name},${place.subLocality},${place.locality},${place.administrativeArea}";
+        }
+      } else {
+        currentLocation =
+            "${place.thoroughfare},${place.subLocality},${place.locality},${place.administrativeArea}";
+      }
+    }
   }).catchError((e) {
     debugPrint(e);
   });
@@ -56,6 +72,7 @@ Future<void> getCurrentPosition(BuildContext context) async {
     provider.location = await getAddressFromLatLng(position, provider.location);
     Weather w = await wf.currentWeatherByLocation(
         position.latitude, position.longitude);
+    context.read<UserCubit>().setPosition(position);
     if (w.temperature != null)
       provider.weather =
           "${w.weatherDescription} ${w.temperature!.celsius.toString().substring(0, 4)} C";

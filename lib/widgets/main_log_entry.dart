@@ -4,8 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_complete_guide/Bloc/Company/company_cubit.dart';
 import 'package:flutter_complete_guide/Bloc/DailyReportNotes/dailyreports_cubit.dart';
+import 'package:flutter_complete_guide/Bloc/User/userCubit.dart';
+import 'package:flutter_complete_guide/models/UserModel.dart';
 import 'package:flutter_complete_guide/widgets/main_drawer.dart';
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../DatabaseHandler/DbHelper.dart';
 import 'getLocation.dart';
 import 'log_info_list.dart';
@@ -29,8 +32,94 @@ class _MainLogEntryState extends State<MainLogEntry> {
   }
 
   getdata() async {
-    companyProvider = BlocProvider.of<CompanyCubit>(context);
+    SharedPreferences sp = await SharedPreferences.getInstance();
     DbHelper db = DbHelper.instance;
+    UserModel? userData = context.read<UserCubit>().state.userModel;
+    context.read<DailyReportsCubit>().state.lstdailyreports =
+        await db.getDailyReports();
+    context.read<DailyReportsCubit>().state.tempdailyreports =
+        await db.getDailyReports();
+    if (userData != null) {
+      db.checkNotes().then((value) {
+        if (value != null) {
+          if (value.notes != null) {
+            value.ontap = true;
+            BlocProvider.of<DailyReportsCubit>(context).setDailyReports(value);
+          } else {
+            BlocProvider.of<DailyReportsCubit>(context).setDailyReports(value);
+          }
+        }
+      });
+      String? id = sp.getString('userid');
+      bool? warn = sp.getBool('warn');
+      String? warntwoweeksecurity = sp.getString('warntwoweeksecurity');
+      String? warntwoweekofa = sp.getString('warntwoweekofa');
+      if (warn != null) {
+        BlocProvider.of<UserCubit>(context).setWarning(true);
+      }
+      if (id == null) {
+        sp.setString("userid", userData.userId.toString());
+        sp.setString('securityLisence', '');
+        sp.setString('ofa', '');
+      } else {
+        userData.securityLicense = sp.getString('securityLisence');
+        userData.ofa = sp.getString("ofa");
+        if (warn == true) {
+          if (userData.securityLicenseExpiryDate != null) {
+            DateTime securityLicenseExpiryDate = DateTime.parse(
+                "${userData.securityLicenseExpiryDate} 00:00:00");
+
+            if (securityLicenseExpiryDate
+                    .compareTo(DateTime.now().add(Duration(days: 90))) <
+                0) {
+              BlocProvider.of<UserCubit>(context).setSecurityWarning(true);
+            }
+          }
+
+          if (userData.ofaExpiryDate != null) {
+            DateTime ofaExpiryDate =
+                DateTime.parse("${userData.ofaExpiryDate} 00:00:00");
+
+            if (ofaExpiryDate
+                    .compareTo(DateTime.now().add(Duration(days: 90))) <
+                0) {
+              BlocProvider.of<UserCubit>(context).setOfaWarning(true);
+            }
+          }
+        } else if (warntwoweeksecurity != null && warntwoweeksecurity != "") {
+          DateTime warnDate = DateTime.parse("${warntwoweeksecurity} 00:00:00");
+          if (DateTime.now().compareTo(warnDate.add(Duration(days: 14))) > 0) {
+            if (userData.securityLicenseExpiryDate != null) {
+              DateTime securityLicenseExpiryDate = DateTime.parse(
+                  "${userData.securityLicenseExpiryDate} 00:00:00");
+
+              if (securityLicenseExpiryDate
+                      .compareTo(DateTime.now().add(Duration(days: 90))) <
+                  0) {
+                BlocProvider.of<UserCubit>(context).setSecurityWarning(true);
+              }
+            }
+          }
+        }
+        if (warntwoweekofa != null && warntwoweekofa != "") {
+          DateTime warnDate = DateTime.parse("${warntwoweekofa} 00:00:00");
+          if (DateTime.now().compareTo(warnDate.add(Duration(days: 14))) > 0) {
+            if (userData.ofaExpiryDate != null) {
+              DateTime ofaExpiryDate =
+                  DateTime.parse("${userData.ofaExpiryDate} 00:00:00");
+
+              if (ofaExpiryDate
+                      .compareTo(DateTime.now().add(Duration(days: 90))) <
+                  0) {
+                BlocProvider.of<UserCubit>(context).setOfaWarning(true);
+              }
+            }
+          }
+        }
+      }
+    }
+
+    companyProvider = BlocProvider.of<CompanyCubit>(context);
 
     await db.getAllCompany().then((value) {
       companyProvider!.setlstCompany(value);
@@ -44,6 +133,74 @@ class _MainLogEntryState extends State<MainLogEntry> {
       await getCurrentPosition(context);
     isloading = false;
     setState(() {});
+    BlocProvider.of<UserCubit>(context).state.securityWarning!
+        ? showDialog(
+            context: context,
+            builder: ((context) => AlertDialog(
+                  title: Text("Warning"),
+                  content: Text(
+                    "The security license will expire on ${BlocProvider.of<UserCubit>(context).state.userModel!.securityLicenseExpiryDate}",
+                    style: TextStyle(
+                        fontFamily: context.watch<UserCubit>().state.font),
+                  ),
+                  actions: [
+                    ElevatedButton(
+                        onPressed: () {
+                          BlocProvider.of<UserCubit>(context)
+                              .setSecurityWarning(false);
+                          BlocProvider.of<UserCubit>(context).setWarning(false);
+                          BlocProvider.of<UserCubit>(context)
+                              .setWarningTwoWeeks(true, true);
+                          Navigator.pop(context);
+                        },
+                        child: Text("Remind me in two weeks")),
+                    ElevatedButton(
+                        onPressed: () {
+                          BlocProvider.of<UserCubit>(context)
+                              .setSecurityWarning(false);
+                          BlocProvider.of<UserCubit>(context)
+                              .setWarningTwoWeeks(false, true);
+                          BlocProvider.of<UserCubit>(context).setWarning(false);
+                          Navigator.pop(context);
+                        },
+                        child: Text("Don't Remind me again"))
+                  ],
+                )))
+        : const Text("");
+    BlocProvider.of<UserCubit>(context).state.ofaWarning!
+        ? showDialog(
+            context: context,
+            builder: ((context) => AlertDialog(
+                  title: Text("Warning"),
+                  content: Text(
+                    "The ofa license will expire on ${BlocProvider.of<UserCubit>(context).state.userModel!.ofaExpiryDate}",
+                    style: TextStyle(
+                        fontFamily: context.watch<UserCubit>().state.font),
+                  ),
+                  actions: [
+                    ElevatedButton(
+                        onPressed: () {
+                          BlocProvider.of<UserCubit>(context)
+                              .setOfaWarning(true);
+                          BlocProvider.of<UserCubit>(context).setWarning(false);
+                          BlocProvider.of<UserCubit>(context)
+                              .setWarningTwoWeeks(true, false);
+                          Navigator.pop(context);
+                        },
+                        child: Text("Remind me in two weeks")),
+                    ElevatedButton(
+                        onPressed: () {
+                          BlocProvider.of<UserCubit>(context)
+                              .setOfaWarning(false);
+                          BlocProvider.of<UserCubit>(context)
+                              .setWarningTwoWeeks(false, false);
+                          BlocProvider.of<UserCubit>(context).setWarning(false);
+                          Navigator.pop(context);
+                        },
+                        child: Text("Don't Remind me again"))
+                  ],
+                )))
+        : const Text("");
   }
 
   bool _showHeader = false;
@@ -105,7 +262,7 @@ class _MainLogEntryState extends State<MainLogEntry> {
                     1,
                 width: mediaQuery.size.width * 0.95,
                 child: HeaderInfo(
-                  lstcompany: companyProvider!.state.lstcompany ?? [],
+                  lstcompany: companyProvider?.state.lstcompany ?? [],
                 ),
               ),
               const Divider(
@@ -141,7 +298,7 @@ class _MainLogEntryState extends State<MainLogEntry> {
           Container(
               width: mediaQuery.size.width * 0.95,
               child: HeaderInfo(
-                lstcompany: companyProvider!.state.lstcompany ?? [],
+                lstcompany: companyProvider?.state.lstcompany ?? [],
               )),
           const Divider(
             height: 3,
@@ -172,7 +329,11 @@ class _MainLogEntryState extends State<MainLogEntry> {
             ),
           )
         : AppBar(
-            title: Text('Security Log Book'),
+            title: Text(
+              'Security Log Book',
+              style:
+                  TextStyle(fontFamily: context.watch<UserCubit>().state.font),
+            ),
             actions: [
               IconButton(
                 onPressed: () => _startNewLogEntry(context),
@@ -233,7 +394,7 @@ class _MainLogEntryState extends State<MainLogEntry> {
                 : pageBody,
             drawer: Drawer(
                 child: MainDrawer(
-              lstcompany: companyProvider!.state.lstcompany ?? [],
+              lstcompany: companyProvider?.state.lstcompany ?? [],
             )),
             floatingActionButtonLocation:
                 FloatingActionButtonLocation.centerFloat,
@@ -250,7 +411,10 @@ class _MainLogEntryState extends State<MainLogEntry> {
                   width: MediaQuery.of(context).size.width * 0.15,
                 ),
                 Text(
-                    "Page ${BlocProvider.of<DailyReportsCubit>(context).state.lstdailyreports.length}")
+                  "Page ${BlocProvider.of<DailyReportsCubit>(context).state.lstdailyreports.length + 1}",
+                  style: TextStyle(
+                      fontFamily: context.watch<UserCubit>().state.font),
+                )
               ],
             ),
           );

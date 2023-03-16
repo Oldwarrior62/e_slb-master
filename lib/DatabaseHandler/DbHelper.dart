@@ -40,7 +40,10 @@ CREATE TABLE user(
   surname TEXT,  
   email TEXT,
   password TEXT,
-  image TEXT
+  image TEXT,
+  securityLicenseExpiryDate TEXT,
+  ofaExpiryDate TEXT,
+  ofaLevel Text
 )
 ''');
     await db.execute('''
@@ -67,7 +70,7 @@ CREATE TABLE company(
     List<Map<String, dynamic>> templst = await db.query('user');
     for (var val in templst) {
       UserModel userModel = UserModel.fromMap(val);
-      if (userModel.email == user.email &&
+      if (userModel.surname == user.surname &&
           userModel.password == user.password) {
         return -1;
       }
@@ -79,16 +82,17 @@ CREATE TABLE company(
   Future<int?> updateUserData(UserModel user) async {
     Database db = await instance.database;
     int result = await db.update('user', user.toMap(),
-        where: "email=?", whereArgs: [user.email]);
+        where: "surname=?", whereArgs: [user.surname]);
+
     return result;
   }
 
-  Future<UserModel?> getLoginUser(String email, String password) async {
+  Future<UserModel?> getLoginUser(String surname, String password) async {
     Database db = await instance.database;
     List<Map<String, dynamic>> templst = await db.query('user');
     for (var user in templst) {
       UserModel userModel = UserModel.fromMap(user);
-      if (userModel.email == email && userModel.password == password) {
+      if (userModel.surname == surname && userModel.password == password) {
         return userModel;
       }
     }
@@ -134,6 +138,7 @@ CREATE TABLE company(
     List<DailyReportNotes> allDailyReport = allRows
         .map((dailyReport) => DailyReportNotes.fromJson(dailyReport))
         .toList();
+
     return allDailyReport;
   }
 
@@ -154,6 +159,7 @@ CREATE TABLE company(
     Database db = await instance.database;
     int result = await db.update('notes', notes.toMap(),
         where: 'date=?', whereArgs: [notes.date]);
+
     return result;
   }
 
@@ -163,6 +169,7 @@ CREATE TABLE company(
     List<DailyReportNotes> allNotes =
         allRows.map((notes) => DailyReportNotes.fromJson(notes)).toList();
     DailyReportNotes? notes;
+    allNotes.removeWhere((element) => element.dailyReportId == null);
     if (allNotes.length > 0) {
       DateTime dt1 = DateTime.parse(
           "${allNotes.last.dateCreated!.split(' ')[0]} 00:00:00");

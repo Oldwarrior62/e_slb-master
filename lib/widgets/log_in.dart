@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_complete_guide/Bloc/User/userCubit.dart';
 
 import '../widgets/main_log_entry.dart';
 import 'user_form.dart';
@@ -38,7 +40,11 @@ class LogIn extends StatelessWidget {
               child: GestureDetector(
                 onTap: () => selectMainLogEntry(context),
                 child: Container(
-                  child: Text('Log in'),
+                  child: Text(
+                    'Log in',
+                    style: TextStyle(
+                        fontFamily: context.watch<UserCubit>().state.font),
+                  ),
                 ),
               ),
             ),

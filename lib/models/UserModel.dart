@@ -29,6 +29,9 @@ class UserModel {
   String? image;
   String? securityLicense;
   String? ofa;
+  String? securityLicenseExpiryDate;
+  String? ofaExpiryDate;
+  String? ofaLevel;
 
   UserModel(
       {this.userId,
@@ -38,7 +41,10 @@ class UserModel {
       this.password,
       this.image,
       this.securityLicense,
-      this.ofa});
+      this.ofa,
+      this.securityLicenseExpiryDate,
+      this.ofaExpiryDate,
+      this.ofaLevel});
 
   // Future<int> saveData(UserModel user) async {
   //   var dbClient = await _db;
@@ -58,6 +64,9 @@ class UserModel {
     this.email = obj['email'];
     this.password = obj['password'];
     this.image = obj['image'];
+    this.securityLicenseExpiryDate = obj['securityLicenseExpiryDate'];
+    this.ofaExpiryDate = obj['ofaExpiryDate'];
+    this.ofaLevel = obj['ofaLevel'];
   }
   Map<String, dynamic> toMap() {
     var map = <String, dynamic>{
@@ -65,7 +74,10 @@ class UserModel {
       'surname': surname,
       'email': email,
       'password': password,
-      'image':image
+      'image': image,
+      'securityLicenseExpiryDate': securityLicenseExpiryDate,
+      'ofaExpiryDate': ofaExpiryDate,
+      'ofaLevel': ofaLevel
     };
     return map;
   }

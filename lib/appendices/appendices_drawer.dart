@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_complete_guide/Bloc/User/userCubit.dart';
@@ -57,13 +59,33 @@ class _AppendicesDrawerState extends State<AppendicesDrawer> {
                         decoration: BoxDecoration(
                             border: Border.all(color: Colors.black),
                             borderRadius: BorderRadius.circular(99.0)),
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Icon(
-                            Icons.person,
-                            size: 80,
-                          ),
-                        ),
+                        child: BlocProvider.of<UserCubit>(context)
+                                    .state
+                                    .userModel ==
+                                null
+                            ? Icon(
+                                Icons.person,
+                                size: 80,
+                              )
+                            : BlocProvider.of<UserCubit>(context)
+                                        .state
+                                        .userModel!
+                                        .image !=
+                                    null
+                                ? CircleAvatar(
+                                    radius: 50,
+                                    backgroundImage: MemoryImage(
+                                        Uint8List.fromList(
+                                            BlocProvider.of<UserCubit>(context)
+                                                .state
+                                                .userModel!
+                                                .image!
+                                                .codeUnits)),
+                                  )
+                                : Icon(
+                                    Icons.person,
+                                    size: 80,
+                                  ),
                       ),
                     ),
                     const SizedBox(
@@ -81,6 +103,9 @@ class _AppendicesDrawerState extends State<AppendicesDrawer> {
                             children: [
                               Text(
                                 "${BlocProvider.of<UserCubit>(context).state.userModel!.email.toString()}",
+                                style: TextStyle(
+                                    fontFamily:
+                                        context.watch<UserCubit>().state.font),
                               ),
                             ],
                           ),
@@ -92,6 +117,9 @@ class _AppendicesDrawerState extends State<AppendicesDrawer> {
                             children: [
                               Text(
                                 "Name:${BlocProvider.of<UserCubit>(context).state.userModel!.name.toString()}",
+                                style: TextStyle(
+                                    fontFamily:
+                                        context.watch<UserCubit>().state.font),
                               ),
                             ],
                           ),
