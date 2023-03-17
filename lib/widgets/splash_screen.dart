@@ -6,6 +6,7 @@ import 'package:flutter_complete_guide/Bloc/User/userCubit.dart';
 import 'package:flutter_complete_guide/models/UserModel.dart';
 import 'package:flutter_complete_guide/widgets/loginForm.dart';
 import 'package:flutter_complete_guide/widgets/main_log_entry.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -47,8 +48,8 @@ class _SplashScreenState extends State<SplashScreen> {
       body: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Center(
-          child: Image.asset(
-            'lib/images/logo.png',
+          child: SvgPicture.asset(
+            'lib/images/logo-svg.svg',
           ),
         ),
       ),

@@ -10,6 +10,7 @@ import 'package:flutter_complete_guide/Bloc/DailyReportNotes/dailyreports_state.
 import 'package:flutter_complete_guide/DatabaseHandler/DbHelper.dart';
 import 'package:flutter_complete_guide/models/company_model.dart';
 import 'package:flutter_complete_guide/models/daily_report_model.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
 import '../Bloc/Company/company_cubit.dart';
 import '../Bloc/User/userCubit.dart';
@@ -75,8 +76,8 @@ class _HeaderInfoState extends State<HeaderInfo> {
                                 fontFamily:
                                     context.watch<UserCubit>().state.font),
                           )
-                    : Image.asset(
-                        'lib/images/logo.png',
+                    : SvgPicture.asset(
+                        'lib/images/logo-svg.svg',
                         width: MediaQuery.of(context).size.width * .2,
                       ),
                 const SizedBox(
