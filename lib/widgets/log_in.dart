@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_complete_guide/Bloc/User/userCubit.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 import '../widgets/main_log_entry.dart';
 import 'user_form.dart';
@@ -28,8 +27,8 @@ class LogIn extends StatelessWidget {
           const SizedBox(
             height: 30,
           ),
-          SvgPicture.asset(
-            'lib/images/logo-svg.svg',
+          Image.asset(
+            'lib/images/logo-transparent-png.png',
             width: mediaQuery.size.width * .7,
           ),
           const SizedBox(
