@@ -57,14 +57,14 @@ class _HeaderInfoState extends State<HeaderInfo> {
                 state.company != null
                     ? state.company!.image != null
                         ? Container(
-                            height: 80,
-                            width: 80,
+                            height: MediaQuery.of(context).size.height * .03,
+                            width: MediaQuery.of(context).size.width * .5,
                             child: ClipRRect(
-                              borderRadius: BorderRadius.circular(99),
+                              // borderRadius: BorderRadius.circular(99),
                               child: Image.memory(
                                 Uint8List.fromList(
                                     state.company!.image!.codeUnits),
-                                fit: BoxFit.cover,
+                                fit: BoxFit.fill,
                               ),
                             ),
                           )

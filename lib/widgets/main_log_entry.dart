@@ -248,13 +248,6 @@ class _MainLogEntryState extends State<MainLogEntry> {
       ),
       _showHeader
           ? Column(children: [
-              // Image.asset(
-              //   'lib/images/logo.png',
-              //   width: mediaQuery.size.width * .2,
-              // ),
-              // const SizedBox(
-              //   height: 4,
-              // ),
               Container(
                 height: (mediaQuery.size.height -
                         appBar.preferredSize.height -
@@ -286,15 +279,6 @@ class _MainLogEntryState extends State<MainLogEntry> {
     return [
       Column(
         children: [
-// this is hard coded for now I want to beable
-//to upload url or image found on the device
-          // Image.asset(
-          //   'lib/images/logo.png',
-          //   width: mediaQuery.size.width * .2,
-          // ),
-          // const SizedBox(
-          //   height: 4,
-          // ),
           Container(
               width: mediaQuery.size.width * 0.95,
               child: HeaderInfo(

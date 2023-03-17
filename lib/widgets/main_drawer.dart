@@ -16,6 +16,7 @@ import 'package:flutter_complete_guide/widgets/view_notes.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../Bloc/Company/company_cubit.dart';
+import '../appendices/main_appendices.dart';
 import '../models/company_model.dart';
 
 class MainDrawer extends StatefulWidget {
@@ -202,6 +203,10 @@ class _MainDrawerState extends State<MainDrawer> {
             }),
             _buildListTile('Get Location', Icons.map, () {
               Navigator.of(context).pushReplacementNamed(GetLocation.routeName);
+            }),
+            _buildListTile('Appendices', Icons.view_list, () {
+              Navigator.of(context)
+                  .pushReplacementNamed(AppendicesMain.routeName);
             }),
             _buildListTile('Log Out', Icons.logout, () async {
               SharedPreferences sp = await SharedPreferences.getInstance();

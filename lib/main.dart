@@ -10,6 +10,7 @@ import 'package:flutter_complete_guide/Bloc/DailyReportNotes/dailyreports_cubit.
 import 'package:flutter_complete_guide/Bloc/Notes/notesCubit.dart';
 import 'package:flutter_complete_guide/Bloc/User/userCubit.dart';
 import 'package:flutter_complete_guide/Bloc/User/userState.dart';
+import 'package:flutter_complete_guide/appendices/10_codes_display.dart';
 import 'package:flutter_complete_guide/models/daily_report_model.dart';
 import 'package:flutter_complete_guide/models/user_model.dart';
 import 'package:flutter_complete_guide/widgets/google_map.dart';
@@ -19,6 +20,17 @@ import 'package:flutter_complete_guide/widgets/updateProfile.dart';
 import 'package:flutter_complete_guide/widgets/add_company.dart';
 import 'package:flutter_complete_guide/widgets/view_notes.dart';
 import './widgets/main_log_entry.dart';
+import 'appendices/conversion_table.dart';
+import 'appendices/discription_of_person.dart';
+import 'appendices/fire_prevention.dart';
+import 'appendices/first_aid.dart';
+import 'appendices/main_appendices.dart';
+import 'appendices/national_use_of_force_framework.dart';
+import 'appendices/note_taking.dart';
+import 'appendices/patrols.dart';
+import 'appendices/phonetic_alphabet.dart';
+import 'appendices/power_of_citizen_arrest.dart';
+import 'appendices/whimis.dart';
 import 'widgets/user_form.dart';
 import 'widgets/LoginForm.dart';
 
@@ -98,7 +110,23 @@ class MyApp extends StatelessWidget {
             UpdateProfile.routeName: ((context) => UpdateProfile()),
             ViewNotes.routeName: ((context) => ViewNotes()),
             SignatureScreen.routeName: ((context) => SignatureScreen()),
-            GetLocation.routeName: ((context) => GetLocation())
+            GetLocation.routeName: ((context) => GetLocation()),
+            SignatureScreen.routeName: (context) => SignatureScreen(),
+            AppendicesMain.routeName: (context) => AppendicesMain(),
+            DiscriptionOfPerson.routeName: (context) => DiscriptionOfPerson(),
+            FireProvention.routeName: (context) => FireProvention(),
+            FirstAid.routeName: (context) => FirstAid(),
+            NationalForceFramwork.routeName: (context) =>
+                NationalForceFramwork(),
+            NoteTaking.routeName: (context) => NoteTaking(),
+            Patrols.routeName: (context) => Patrols(),
+            PhoneticAlphabit.routeName: (context) => PhoneticAlphabit(),
+            PowerOfCitizenArrest.routeName: (context) => PowerOfCitizenArrest(),
+            Whimis.routeName: (context) => Whimis(),
+            ConversionTable.routeName: (context) => ConversionTable(),
+            AppendicesMain.routeName: (context) => AppendicesMain(),
+            TenCodesDisplay.routeName: (context) => TenCodesDisplay(),
+            GetLocation.routeName: ((context) => GetLocation()),
           },
         ),
       ),
