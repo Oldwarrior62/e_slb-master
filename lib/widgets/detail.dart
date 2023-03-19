@@ -22,6 +22,7 @@ import 'package:pdf/widgets.dart ' as pw;
 
 class DetailScreen extends StatelessWidget {
   DetailScreen({Key? key}) : super(key: key);
+  static const routeName = '/details';
 
   List<Company> lstcompany = [];
 
@@ -270,7 +271,7 @@ class DetailScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              "Notes:",
+              "Breifing Notes:",
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
             Text(
@@ -292,7 +293,7 @@ class DetailScreen extends StatelessWidget {
           mytext("Signature", ""),
           Container(
             height: 100,
-            width: 100,
+            width: 200,
             child: state.tempdailyreports[index].signature != ""
                 ? Image.memory(
                     convertStringToUint8List(

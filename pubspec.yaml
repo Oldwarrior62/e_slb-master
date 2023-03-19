@@ -108,6 +108,11 @@ flutter:
         - asset: lib/fonts/Quicksand-Regular.ttf
         - asset: lib/fonts/Quicksand-Bold.ttf
           weight: 700
+    - family: Cursiv
+      fonts:
+        - asset: lib/fonts/Cursiv-all hail julia.ttf
+        - asset: lib/fonts/Cursiv-KGTheFighter.ttf
+          weight: 700
   #   - family: OpenSans
   #     fonts:
   #       - asset: assets/fonts/QuickSand-Regular.ttf

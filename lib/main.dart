@@ -1,7 +1,6 @@
 // ignore_for_file: equal_keys_in_map
 
 import 'dart:async';
-import 'dart:ffi';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -11,8 +10,7 @@ import 'package:flutter_complete_guide/Bloc/Notes/notesCubit.dart';
 import 'package:flutter_complete_guide/Bloc/User/userCubit.dart';
 import 'package:flutter_complete_guide/Bloc/User/userState.dart';
 import 'package:flutter_complete_guide/appendices/10_codes_display.dart';
-import 'package:flutter_complete_guide/models/daily_report_model.dart';
-import 'package:flutter_complete_guide/models/user_model.dart';
+import 'package:flutter_complete_guide/widgets/detail.dart';
 import 'package:flutter_complete_guide/widgets/google_map.dart';
 import 'package:flutter_complete_guide/widgets/signature.dart';
 import 'package:flutter_complete_guide/widgets/splash_screen.dart';
@@ -127,6 +125,7 @@ class MyApp extends StatelessWidget {
             AppendicesMain.routeName: (context) => AppendicesMain(),
             TenCodesDisplay.routeName: (context) => TenCodesDisplay(),
             GetLocation.routeName: ((context) => GetLocation()),
+            DetailScreen.routeName: (context) => DetailScreen(),
           },
         ),
       ),

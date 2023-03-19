@@ -11,7 +11,6 @@ import 'package:flutter_complete_guide/Bloc/User/userCubit.dart';
 import 'package:flutter_complete_guide/DatabaseHandler/DbHelper.dart';
 import 'package:flutter_complete_guide/comm/commHelper.dart';
 import 'package:flutter_complete_guide/models/UserModel.dart';
-import 'package:flutter_complete_guide/models/user_model.dart';
 import 'package:flutter_complete_guide/widgets/main_drawer.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:image_picker/image_picker.dart';

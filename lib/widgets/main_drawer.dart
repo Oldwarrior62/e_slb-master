@@ -18,6 +18,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../Bloc/Company/company_cubit.dart';
 import '../appendices/main_appendices.dart';
 import '../models/company_model.dart';
+import 'detail.dart';
 
 class MainDrawer extends StatefulWidget {
   MainDrawer({required this.lstcompany});
@@ -40,12 +41,12 @@ class _MainDrawerState extends State<MainDrawer> {
     return ListTile(
       leading: Icon(
         icon,
-        size: 26,
+        size: 20,
       ),
       title: Text(
         title,
         style: TextStyle(
-            fontSize: 24,
+            fontSize: 18,
             fontWeight: FontWeight.bold,
             fontFamily: context.watch<UserCubit>().state.font),
       ),
@@ -146,21 +147,6 @@ class _MainDrawerState extends State<MainDrawer> {
                 )
               ],
             ),
-            // Container(
-            //   height: 120,
-            //   width: double.infinity,
-            //   padding: const EdgeInsets.all(20),
-            //   alignment: Alignment.centerLeft,
-            //   color: Theme.of(context).colorScheme.secondary,
-            //   child: Text(
-            //     'Security log book',
-            //     style: TextStyle(
-            //       fontWeight: FontWeight.w900,
-            //       fontSize: 30,
-            //       color: Colors.white,
-            //     ),
-            //   ),
-            // ),
             SizedBox(
               height: 20,
             ),
@@ -207,6 +193,10 @@ class _MainDrawerState extends State<MainDrawer> {
             _buildListTile('Appendices', Icons.view_list, () {
               Navigator.of(context)
                   .pushReplacementNamed(AppendicesMain.routeName);
+            }),
+            _buildListTile('Details Page', Icons.view_list, () {
+              Navigator.of(context)
+                  .pushReplacementNamed(DetailScreen.routeName);
             }),
             _buildListTile('Log Out', Icons.logout, () async {
               SharedPreferences sp = await SharedPreferences.getInstance();

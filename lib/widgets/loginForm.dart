@@ -89,6 +89,7 @@ class _LoginFormState extends State<LoginForm> {
           'Secure log',
           style: TextStyle(fontFamily: context.watch<UserCubit>().state.font),
         ),
+        automaticallyImplyLeading: false,
       ),
       body: Form(
         key: _formKey,
@@ -103,7 +104,7 @@ class _LoginFormState extends State<LoginForm> {
                   getTextFormField(
                       controller: _conUserId,
                       icon: Icons.person,
-                      hintName: 'Name'),
+                      hintName: 'Surname'),
                   SizedBox(height: 10.0),
                   getTextFormField(
                     controller: _conPassword,

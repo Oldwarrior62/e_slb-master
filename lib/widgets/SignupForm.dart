@@ -140,8 +140,9 @@ class _SignupFormState extends State<SignupForm> {
                   getTextFormField(
                     controller: _conPassword,
                     icon: Icons.lock,
-                    hintName: 'Password',
+                    hintName: '4 Digit Password',
                     isObscureText: true,
+                    inputType: TextInputType.number,
                   ),
                   SizedBox(height: 10.0),
                   getTextFormField(
@@ -149,6 +150,7 @@ class _SignupFormState extends State<SignupForm> {
                     icon: Icons.lock,
                     hintName: 'Confirm Password',
                     isObscureText: true,
+                    inputType: TextInputType.number,
                   ),
                   Container(
                     margin: const EdgeInsets.all(30.0),
