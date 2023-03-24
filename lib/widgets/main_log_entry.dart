@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_complete_guide/Bloc/Company/company_cubit.dart';
 import 'package:flutter_complete_guide/Bloc/DailyReportNotes/dailyreports_cubit.dart';
 import 'package:flutter_complete_guide/Bloc/User/userCubit.dart';
+import 'package:flutter_complete_guide/comm/genTextFormField.dart';
 import 'package:flutter_complete_guide/models/UserModel.dart';
 import 'package:flutter_complete_guide/widgets/main_drawer.dart';
 import 'package:intl/intl.dart';
@@ -25,6 +26,8 @@ class MainLogEntry extends StatefulWidget {
 class _MainLogEntryState extends State<MainLogEntry> {
   bool isloading = true;
   CompanyCubit? companyProvider;
+  TextEditingController locationController = TextEditingController();
+  TextEditingController weatherController = TextEditingController();
   @override
   void initState() {
     getdata();
@@ -131,76 +134,240 @@ class _MainLogEntryState extends State<MainLogEntry> {
     if (BlocProvider.of<DailyReportsCubit>(context).state.location == "" ||
         BlocProvider.of<DailyReportsCubit>(context).state.weather == "")
       await getCurrentPosition(context);
-    isloading = false;
-    setState(() {});
-    BlocProvider.of<UserCubit>(context).state.securityWarning!
-        ? showDialog(
-            context: context,
-            builder: ((context) => AlertDialog(
-                  title: Text("Warning"),
-                  content: Text(
-                    "The security license will expire on ${BlocProvider.of<UserCubit>(context).state.userModel!.securityLicenseExpiryDate}",
-                    style: TextStyle(
-                        fontFamily: context.watch<UserCubit>().state.font),
+    if (BlocProvider.of<DailyReportsCubit>(context).state.location == "" ||
+        BlocProvider.of<DailyReportsCubit>(context).state.weather == "") {
+      showDialog(
+          context: context,
+          builder: ((context) => AlertDialog(
+                title: Text("No Internet"),
+                clipBehavior: Clip.none,
+                content: SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      getTextFormField(
+                        controller: locationController,
+                        hintName: 'Enter Location',
+                        icon: Icons.location_history,
+                      ),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      getTextFormField(
+                        controller: weatherController,
+                        hintName: 'Enter Weather',
+                        icon: Icons.cloud,
+                      )
+                    ],
                   ),
-                  actions: [
-                    ElevatedButton(
-                        onPressed: () {
-                          BlocProvider.of<UserCubit>(context)
-                              .setSecurityWarning(false);
-                          BlocProvider.of<UserCubit>(context).setWarning(false);
-                          BlocProvider.of<UserCubit>(context)
-                              .setWarningTwoWeeks(true, true);
+                ),
+                actions: [
+                  ElevatedButton(
+                      onPressed: () {
+                        if (locationController.text.isNotEmpty &&
+                            weatherController.text.isNotEmpty) {
+                          BlocProvider.of<DailyReportsCubit>(context)
+                              .setLocation(locationController.text.toString());
+                          BlocProvider.of<DailyReportsCubit>(context)
+                              .setWeather(weatherController.text.toString());
                           Navigator.pop(context);
-                        },
-                        child: Text("Remind me in two weeks")),
-                    ElevatedButton(
-                        onPressed: () {
+                          isloading = false;
+                          setState(() {});
                           BlocProvider.of<UserCubit>(context)
-                              .setSecurityWarning(false);
-                          BlocProvider.of<UserCubit>(context)
-                              .setWarningTwoWeeks(false, true);
-                          BlocProvider.of<UserCubit>(context).setWarning(false);
-                          Navigator.pop(context);
-                        },
-                        child: Text("Don't Remind me again"))
-                  ],
-                )))
-        : const Text("");
-    BlocProvider.of<UserCubit>(context).state.ofaWarning!
-        ? showDialog(
-            context: context,
-            builder: ((context) => AlertDialog(
-                  title: Text("Warning"),
-                  content: Text(
-                    "The ofa license will expire on ${BlocProvider.of<UserCubit>(context).state.userModel!.ofaExpiryDate}",
-                    style: TextStyle(
-                        fontFamily: context.watch<UserCubit>().state.font),
-                  ),
-                  actions: [
-                    ElevatedButton(
-                        onPressed: () {
-                          BlocProvider.of<UserCubit>(context)
-                              .setOfaWarning(true);
-                          BlocProvider.of<UserCubit>(context).setWarning(false);
-                          BlocProvider.of<UserCubit>(context)
-                              .setWarningTwoWeeks(true, false);
-                          Navigator.pop(context);
-                        },
-                        child: Text("Remind me in two weeks")),
-                    ElevatedButton(
-                        onPressed: () {
-                          BlocProvider.of<UserCubit>(context)
-                              .setOfaWarning(false);
-                          BlocProvider.of<UserCubit>(context)
-                              .setWarningTwoWeeks(false, false);
-                          BlocProvider.of<UserCubit>(context).setWarning(false);
-                          Navigator.pop(context);
-                        },
-                        child: Text("Don't Remind me again"))
-                  ],
-                )))
-        : const Text("");
+                                  .state
+                                  .securityWarning!
+                              ? showDialog(
+                                  context: context,
+                                  builder: ((context) => AlertDialog(
+                                        title: Text("Warning"),
+                                        content: Text(
+                                          "The security license will expire on ${BlocProvider.of<UserCubit>(context).state.userModel!.securityLicenseExpiryDate}",
+                                          style: TextStyle(
+                                              fontFamily: context
+                                                  .watch<UserCubit>()
+                                                  .state
+                                                  .font),
+                                        ),
+                                        actions: [
+                                          ElevatedButton(
+                                              onPressed: () {
+                                                BlocProvider.of<UserCubit>(
+                                                        context)
+                                                    .setSecurityWarning(false);
+                                                BlocProvider.of<UserCubit>(
+                                                        context)
+                                                    .setWarning(false);
+                                                BlocProvider.of<UserCubit>(
+                                                        context)
+                                                    .setWarningTwoWeeks(
+                                                        true, true);
+                                                Navigator.pop(context);
+                                              },
+                                              child: Text(
+                                                  "Remind me in two weeks")),
+                                          ElevatedButton(
+                                              onPressed: () {
+                                                BlocProvider.of<UserCubit>(
+                                                        context)
+                                                    .setSecurityWarning(false);
+                                                BlocProvider.of<UserCubit>(
+                                                        context)
+                                                    .setWarningTwoWeeks(
+                                                        false, true);
+                                                BlocProvider.of<UserCubit>(
+                                                        context)
+                                                    .setWarning(false);
+                                                Navigator.pop(context);
+                                              },
+                                              child:
+                                                  Text("Don't Remind me again"))
+                                        ],
+                                      )))
+                              : const Text("");
+                          BlocProvider.of<UserCubit>(context).state.ofaWarning!
+                              ? showDialog(
+                                  context: context,
+                                  builder: ((context) => AlertDialog(
+                                        title: Text("Warning"),
+                                        content: Text(
+                                          "The ofa license will expire on ${BlocProvider.of<UserCubit>(context).state.userModel!.ofaExpiryDate}",
+                                          style: TextStyle(
+                                              fontFamily: context
+                                                  .watch<UserCubit>()
+                                                  .state
+                                                  .font),
+                                        ),
+                                        actions: [
+                                          ElevatedButton(
+                                              onPressed: () {
+                                                BlocProvider.of<UserCubit>(
+                                                        context)
+                                                    .setOfaWarning(true);
+                                                BlocProvider.of<UserCubit>(
+                                                        context)
+                                                    .setWarning(false);
+                                                BlocProvider.of<UserCubit>(
+                                                        context)
+                                                    .setWarningTwoWeeks(
+                                                        true, false);
+                                                Navigator.pop(context);
+                                              },
+                                              child: Text(
+                                                  "Remind me in two weeks")),
+                                          ElevatedButton(
+                                              onPressed: () {
+                                                BlocProvider.of<UserCubit>(
+                                                        context)
+                                                    .setOfaWarning(false);
+                                                BlocProvider.of<UserCubit>(
+                                                        context)
+                                                    .setWarningTwoWeeks(
+                                                        false, false);
+                                                BlocProvider.of<UserCubit>(
+                                                        context)
+                                                    .setWarning(false);
+                                                Navigator.pop(context);
+                                              },
+                                              child:
+                                                  Text("Don't Remind me again"))
+                                        ],
+                                      )))
+                              : const Text("");
+                        } else {
+                          showDialog(
+                              context: context,
+                              builder: ((context) => AlertDialog(
+                                    title: Text("Warning!"),
+                                    content: Text("Fill all fields"),
+                                    actions: [
+                                      ElevatedButton(
+                                          onPressed: () {
+                                            Navigator.pop(context);
+                                          },
+                                          child: Text("Okay"))
+                                    ],
+                                  )));
+                        }
+                      },
+                      child: Text("Save"))
+                ],
+              )));
+    } else {
+      isloading = false;
+      setState(() {});
+      BlocProvider.of<UserCubit>(context).state.securityWarning!
+          ? showDialog(
+              context: context,
+              builder: ((context) => AlertDialog(
+                    title: Text("Warning"),
+                    content: Text(
+                      "The security license will expire on ${BlocProvider.of<UserCubit>(context).state.userModel!.securityLicenseExpiryDate}",
+                      style: TextStyle(
+                          fontFamily: context.watch<UserCubit>().state.font),
+                    ),
+                    actions: [
+                      ElevatedButton(
+                          onPressed: () {
+                            BlocProvider.of<UserCubit>(context)
+                                .setSecurityWarning(false);
+                            BlocProvider.of<UserCubit>(context)
+                                .setWarning(false);
+                            BlocProvider.of<UserCubit>(context)
+                                .setWarningTwoWeeks(true, true);
+                            Navigator.pop(context);
+                          },
+                          child: Text("Remind me in two weeks")),
+                      ElevatedButton(
+                          onPressed: () {
+                            BlocProvider.of<UserCubit>(context)
+                                .setSecurityWarning(false);
+                            BlocProvider.of<UserCubit>(context)
+                                .setWarningTwoWeeks(false, true);
+                            BlocProvider.of<UserCubit>(context)
+                                .setWarning(false);
+                            Navigator.pop(context);
+                          },
+                          child: Text("Don't Remind me again"))
+                    ],
+                  )))
+          : const Text("");
+      BlocProvider.of<UserCubit>(context).state.ofaWarning!
+          ? showDialog(
+              context: context,
+              builder: ((context) => AlertDialog(
+                    title: Text("Warning"),
+                    content: Text(
+                      "The ofa license will expire on ${BlocProvider.of<UserCubit>(context).state.userModel!.ofaExpiryDate}",
+                      style: TextStyle(
+                          fontFamily: context.watch<UserCubit>().state.font),
+                    ),
+                    actions: [
+                      ElevatedButton(
+                          onPressed: () {
+                            BlocProvider.of<UserCubit>(context)
+                                .setOfaWarning(true);
+                            BlocProvider.of<UserCubit>(context)
+                                .setWarning(false);
+                            BlocProvider.of<UserCubit>(context)
+                                .setWarningTwoWeeks(true, false);
+                            Navigator.pop(context);
+                          },
+                          child: Text("Remind me in two weeks")),
+                      ElevatedButton(
+                          onPressed: () {
+                            BlocProvider.of<UserCubit>(context)
+                                .setOfaWarning(false);
+                            BlocProvider.of<UserCubit>(context)
+                                .setWarningTwoWeeks(false, false);
+                            BlocProvider.of<UserCubit>(context)
+                                .setWarning(false);
+                            Navigator.pop(context);
+                          },
+                          child: Text("Don't Remind me again"))
+                    ],
+                  )))
+          : const Text("");
+    }
   }
 
   bool _showHeader = false;
@@ -248,6 +415,13 @@ class _MainLogEntryState extends State<MainLogEntry> {
       ),
       _showHeader
           ? Column(children: [
+              // Image.asset(
+              //   'lib/images/logo.png',
+              //   width: mediaQuery.size.width * .2,
+              // ),
+              // const SizedBox(
+              //   height: 4,
+              // ),
               Container(
                 height: (mediaQuery.size.height -
                         appBar.preferredSize.height -
@@ -279,6 +453,15 @@ class _MainLogEntryState extends State<MainLogEntry> {
     return [
       Column(
         children: [
+// this is hard coded for now I want to beable
+//to upload url or image found on the device
+          // Image.asset(
+          //   'lib/images/logo.png',
+          //   width: mediaQuery.size.width * .2,
+          // ),
+          // const SizedBox(
+          //   height: 4,
+          // ),
           Container(
               width: mediaQuery.size.width * 0.95,
               child: HeaderInfo(

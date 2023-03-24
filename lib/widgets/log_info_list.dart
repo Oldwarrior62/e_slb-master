@@ -1,9 +1,15 @@
 // ignore_for_file: must_be_immutable
 
+import 'dart:typed_data';
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_complete_guide/Bloc/Company/company_cubit.dart';
+import 'package:flutter_complete_guide/Bloc/Company/company_state.dart';
 import 'package:flutter_complete_guide/Bloc/DailyReportNotes/dailyreports_cubit.dart';
 import 'package:flutter_complete_guide/Bloc/DailyReportNotes/dailyreports_state.dart';
+
 import '../DatabaseHandler/DbHelper.dart';
 import '../models/daily_report_model.dart';
 
@@ -17,17 +23,11 @@ class LogInfoList extends StatelessWidget {
       return Container(
         child: state.lstdailyreports.isEmpty
             ? Column(
-                mainAxisAlignment: MainAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  SizedBox(
-                    height: 75,
-                  ),
                   Image.asset(
-                    'lib/images/logo-transparent-png.png',
+                    'lib/images/logo.png',
                     width: mediaQuery.size.width * .8,
-                  ),
-                  SizedBox(
-                    height: 75,
                   ),
                   Text(
                     'No log entered.',
@@ -35,28 +35,75 @@ class LogInfoList extends StatelessWidget {
                   ),
                 ],
               )
-            : ListView(
-                physics: const BouncingScrollPhysics(),
-                shrinkWrap: true,
+            : Stack(
                 children: [
-                  ListView.builder(
+                  BlocBuilder<CompanyCubit, CompanyState>(
+                      builder: (context, state) {
+                    return Positioned(
+                      bottom: MediaQuery.of(context).size.height * 0.2,
+                      top: MediaQuery.of(context).size.height * 0.2,
+                      right: MediaQuery.of(context).size.width * 0.25,
+                      left: MediaQuery.of(context).size.width * 0.25,
+                      child: state.img != null
+                          ? ClipRRect(
+                              borderRadius: BorderRadius.circular(99),
+                              child: Container(
+                                height: 100,
+                                width: 100,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(99),
+                                ),
+                                child: ColorFiltered(
+                                  colorFilter: ColorFilter.mode(
+                                      Colors.black.withOpacity(0.7),
+                                      BlendMode.dstATop),
+                                  child: Image.memory(
+                                    Uint8List.fromList(
+                                        state.company!.image!.codeUnits),
+                                    fit: BoxFit.fill,
+                                    gaplessPlayback: true,
+                                  ),
+                                ),
+                              ),
+                            )
+                          : const Padding(
+                              padding: EdgeInsets.zero,
+                            ),
+                    );
+                  }),
+                  ListView(
                     physics: const BouncingScrollPhysics(),
                     shrinkWrap: true,
-                    itemBuilder: (ctx, index) {
-                      return ListView.builder(
-                          physics: const BouncingScrollPhysics(),
-                          shrinkWrap: true,
-                          itemCount: state.lstdailyreports[index].logs.length,
-                          itemBuilder: (context, notes_index) {
-                            return logEntryItem(index, notes_index,
-                                curScaleFactor, context, state);
-                          });
-                    },
-                    itemCount: state.lstdailyreports.length,
+                    children: [
+                      ListView.builder(
+                        physics: const BouncingScrollPhysics(),
+                        shrinkWrap: true,
+                        itemBuilder: (ctx, index) {
+                          return ListView.builder(
+                              physics: const BouncingScrollPhysics(),
+                              shrinkWrap: true,
+                              itemCount:
+                                  state.lstdailyreports[index].logs.length,
+                              itemBuilder: (context, notes_index) {
+                                return Column(
+                                  children: [
+                                    logEntryItem(index, notes_index,
+                                        curScaleFactor, context, state),
+                                    Divider(
+                                      height: 0.8,
+                                      thickness: 0.5,
+                                    )
+                                  ],
+                                );
+                              });
+                        },
+                        itemCount: state.lstdailyreports.length,
+                      ),
+                      const SizedBox(
+                        height: 140,
+                      )
+                    ],
                   ),
-                  const SizedBox(
-                    height: 140,
-                  )
                 ],
               ),
       );

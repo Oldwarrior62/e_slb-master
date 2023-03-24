@@ -93,6 +93,14 @@ class DailyReportsCubit extends Cubit<DailyReportsState> {
         lstdailyreports: state.lstdailyreports,
         screenshotController: state.screenshotController));
   }
+
+  setLocation(String location) {
+    emit(state.copywith(location: location));
+  }
+
+  setWeather(String weather) {
+    emit(state.copywith(weather: weather));
+  }
   // setLog(bool log) {
   //   emit(state.copywith(log: log));
   // }

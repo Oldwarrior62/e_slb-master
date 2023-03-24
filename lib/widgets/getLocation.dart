@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_complete_guide/Bloc/DailyReportNotes/dailyreports_cubit.dart';
 import 'package:flutter_complete_guide/Bloc/User/userCubit.dart';
+import 'package:weather/weather.dart' as wf;
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:weather/weather.dart';
@@ -66,16 +67,34 @@ Future<void> getCurrentPosition(BuildContext context) async {
   WeatherFactory wf = WeatherFactory("7839e67319dc2b52fee25dbeaac1ea57");
   final hasPermission = await handleLocationPermission(context);
   if (!hasPermission) return;
-  await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high)
-      .then((Position position) async {
-    provider.location = await getAddressFromLatLng(position, provider.location);
-    Weather w = await wf.currentWeatherByLocation(
-        position.latitude, position.longitude);
-    context.read<UserCubit>().setPosition(position);
-    if (w.temperature != null)
-      provider.weather =
-          "${w.weatherDescription} ${w.temperature!.celsius.toString().substring(0, 4)} C";
-  }).catchError((e) {
-    debugPrint(e);
-  });
+  try {
+    await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high)
+        .timeout(Duration(seconds: 10))
+        .then((Position position) async {
+      provider.location =
+          await getAddressFromLatLng(position, provider.location);
+      if (position.latitude.toString().split('.')[0] == '33' &&
+          position.longitude.toString().split('.')[0] == '73') {
+        provider.location = "";
+        provider.weather = "";
+      } else {
+        try {
+          Weather w = await wf.currentWeatherByLocation(
+              position.latitude, position.longitude);
+          context.read<UserCubit>().setPosition(position);
+          if (w.temperature != null)
+            provider.weather =
+                "${w.weatherDescription} ${w.temperature!.celsius.toString().substring(0, 4)} C";
+        } catch (e) {
+          provider.location = "";
+          provider.weather = "";
+        }
+      }
+    }).catchError((e) {
+      debugPrint(e);
+    });
+  } catch (e) {
+    provider.location = "";
+    provider.weather = "";
+  }
 }

@@ -1,5 +1,6 @@
 // ignore_for_file: must_be_immutable
 
+import 'package:expandable/expandable.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -54,28 +55,14 @@ class _HeaderInfoState extends State<HeaderInfo> {
                   width: MediaQuery.of(context).size.width * 0.35,
                 ),
                 state.company != null
-                    ? state.company!.image != null
-                        ? Container(
-                            height: MediaQuery.of(context).size.height * .03,
-                            width: MediaQuery.of(context).size.width * .5,
-                            child: ClipRRect(
-                              // borderRadius: BorderRadius.circular(99),
-                              child: Image.memory(
-                                Uint8List.fromList(
-                                    state.company!.image!.codeUnits),
-                                fit: BoxFit.fill,
-                              ),
-                            ),
-                          )
-                        : Text(
-                            state.company!.companyName.toString(),
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontFamily:
-                                    context.watch<UserCubit>().state.font),
-                          )
+                    ? Text(
+                        state.company!.companyName.toString(),
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontFamily: context.watch<UserCubit>().state.font),
+                      )
                     : Image.asset(
-                        'lib/images/logo-transparent-png.png',
+                        'lib/images/logo.png',
                         width: MediaQuery.of(context).size.width * .2,
                       ),
                 const SizedBox(
@@ -113,28 +100,23 @@ class _HeaderInfoState extends State<HeaderInfo> {
         Padding(
           padding: const EdgeInsets.all(8.0),
           child: Container(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  '${context.read<DailyReportsCubit>().state.weather}',
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontFamily: context.watch<UserCubit>().state.font),
-                ),
-                const SizedBox(
-                  width: 10,
-                ),
-                Flexible(
-                  child: Text(
-                    '${context.read<DailyReportsCubit>().state.location}',
-                    style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 14 * curScaleFactor,
-                        fontFamily: context.watch<UserCubit>().state.font),
-                  ),
-                ),
-              ],
+            child: Text(
+              '${context.read<DailyReportsCubit>().state.weather}',
+              style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontFamily: context.watch<UserCubit>().state.font),
+            ),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Flexible(
+            child: Text(
+              '${context.read<DailyReportsCubit>().state.location}',
+              style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 14 * curScaleFactor,
+                  fontFamily: context.watch<UserCubit>().state.font),
             ),
           ),
         ),

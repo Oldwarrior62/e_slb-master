@@ -1,6 +1,7 @@
 // ignore_for_file: must_be_immutable
 import 'dart:io';
 import 'dart:typed_data';
+import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -22,7 +23,7 @@ import 'package:pdf/widgets.dart ' as pw;
 
 class DetailScreen extends StatelessWidget {
   DetailScreen({Key? key}) : super(key: key);
-  static const routeName = '/details';
+  static const routeName = '/detail';
 
   List<Company> lstcompany = [];
 
@@ -227,15 +228,15 @@ class DetailScreen extends StatelessWidget {
         const SizedBox(
           height: 15,
         ),
+        mytext(
+            "",
+            state.tempdailyreports[index].logs[logIndex ?? 0].weather
+                .toString()),
+        const SizedBox(
+          height: 15,
+        ),
         Row(
           children: [
-            mytext(
-                "",
-                state.tempdailyreports[index].logs[logIndex ?? 0].weather
-                    .toString()),
-            const SizedBox(
-              width: 10,
-            ),
             Flexible(
               child: mytext(
                   "",
@@ -244,34 +245,27 @@ class DetailScreen extends StatelessWidget {
             )
           ],
         ),
+        userProvider.state.userModel!.ofaExpiryDate.toString() == "null"
+            ? const Padding(padding: EdgeInsets.zero)
+            : mytext("OFA: ",
+                userProvider.state.userModel!.ofaExpiryDate.toString()),
         const SizedBox(
           height: 10,
         ),
-        userProvider.state.userModel!.ofaExpiryDate != null
-            ? mytext(
-                "oFA: ", userProvider.state.userModel!.ofaExpiryDate.toString())
-            : const Padding(padding: EdgeInsets.zero),
-        userProvider.state.userModel!.ofaExpiryDate != null
-            ? const SizedBox(
-                height: 10,
-              )
-            : const Padding(padding: EdgeInsets.zero),
-        userProvider.state.userModel!.securityLicenseExpiryDate != null
-            ? mytext(
+        userProvider.state.userModel!.ofaExpiryDate.toString() == "null"
+            ? const Padding(padding: EdgeInsets.zero)
+            : mytext(
                 "Security: ",
                 userProvider.state.userModel!.securityLicenseExpiryDate
-                    .toString())
-            : const Padding(padding: EdgeInsets.zero),
-        userProvider.state.userModel!.securityLicenseExpiryDate != null
-            ? const SizedBox(
-                height: 15,
-              )
-            : const Padding(padding: EdgeInsets.zero),
+                    .toString()),
+        const SizedBox(
+          height: 15,
+        ),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              "Breifing Notes:",
+              "Notes:",
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
             Text(
@@ -293,7 +287,7 @@ class DetailScreen extends StatelessWidget {
           mytext("Signature", ""),
           Container(
             height: 100,
-            width: 200,
+            width: 100,
             child: state.tempdailyreports[index].signature != ""
                 ? Image.memory(
                     convertStringToUint8List(
@@ -353,14 +347,16 @@ class DetailScreen extends StatelessWidget {
             ? state.tempdailyreports[index].logs[notes_index].logo != null
                 ? Column(
                     children: [
-                      CircleAvatar(
-                        radius: 40,
-                        backgroundImage: MemoryImage(Uint8List.fromList(state
-                            .tempdailyreports[index]
-                            .logs[notes_index]
-                            .logo!
-                            .codeUnits)),
-                      ),
+                      Text(
+                          "${state.tempdailyreports[index].logs[notes_index].company.toString()}"),
+                      // CircleAvatar(
+                      //   radius: 40,
+                      //   backgroundImage: MemoryImage(Uint8List.fromList(state
+                      //       .tempdailyreports[index]
+                      //       .logs[notes_index]
+                      //       .logo!
+                      //       .codeUnits)),
+                      // ),
                       header(userProvider, state, index, logIndex: notes_index),
                       const SizedBox(
                         height: 15,
@@ -373,21 +369,50 @@ class DetailScreen extends StatelessWidget {
         const SizedBox(
           height: 10,
         ),
-        ListTile(
-          leading: Text(
-            "${state.tempdailyreports[index].logs[notes_index].timeCreated.toString()} |",
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 16,
+        Stack(
+          children: [
+            Positioned(
+              bottom: 20,
+              top: 20,
+              right: 20,
+              left: 20,
+              child:
+                  state.tempdailyreports[index].logs[notes_index].logo != null
+                      ? Container(
+                          height: 100,
+                          width: 100,
+                          child: ImageFiltered(
+                            imageFilter: ImageFilter.blur(sigmaY: 5, sigmaX: 5),
+                            child: Image.memory(
+                              Uint8List.fromList(state.tempdailyreports[index]
+                                  .logs[notes_index].logo!.codeUnits),
+                              fit: BoxFit.fill,
+                              gaplessPlayback: true,
+                            ),
+                          ),
+                        )
+                      : const Padding(
+                          padding: EdgeInsets.zero,
+                        ),
             ),
-          ),
-          title: state.lstdailyreports[index].logs[notes_index].isline!
-              ? Text(
-                  state.lstdailyreports[index].logs[notes_index].log.toString(),
-                  style: TextStyle(decoration: TextDecoration.lineThrough),
-                )
-              : Text(state.tempdailyreports[index].logs[notes_index].log
-                  .toString()),
+            ListTile(
+              leading: Text(
+                "${state.tempdailyreports[index].logs[notes_index].timeCreated.toString()} |",
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                ),
+              ),
+              title: state.tempdailyreports[index].logs[notes_index].isline!
+                  ? Text(
+                      state.tempdailyreports[index].logs[notes_index].log
+                          .toString(),
+                      style: TextStyle(decoration: TextDecoration.lineThrough),
+                    )
+                  : Text(state.tempdailyreports[index].logs[notes_index].log
+                      .toString()),
+            ),
+          ],
         ),
         signatureStatus
             ? signature(state, index)
