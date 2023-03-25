@@ -1,7 +1,9 @@
+import 'dart:convert';
 import 'package:flutter_complete_guide/Bloc/Notes/notesState.dart';
 import 'package:flutter_complete_guide/models/UserModel.dart';
 import 'package:flutter_complete_guide/models/company_model.dart';
 import 'package:flutter_complete_guide/models/daily_report_model.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite/sqflite.dart';
 
 class DbHelper {
@@ -43,7 +45,8 @@ CREATE TABLE user(
   image TEXT,
   securityLicenseExpiryDate TEXT,
   ofaExpiryDate TEXT,
-  ofaLevel Text
+  ofaLevel Text,
+  isLogin Text
 )
 ''');
     await db.execute('''
@@ -76,6 +79,8 @@ CREATE TABLE company(
       }
     }
     int result = await db.insert('user', user.toMap());
+    SharedPreferences sp = await SharedPreferences.getInstance();
+    await sp.setString("userData", jsonEncode(user.toMap()));
     return result;
   }
 
@@ -93,6 +98,7 @@ CREATE TABLE company(
     for (var user in templst) {
       UserModel userModel = UserModel.fromMap(user);
       if (userModel.surname == surname && userModel.password == password) {
+        userModel.isLogin = "true";
         return userModel;
       }
     }

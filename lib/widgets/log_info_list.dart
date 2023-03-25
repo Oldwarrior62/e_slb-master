@@ -26,7 +26,7 @@ class LogInfoList extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   Image.asset(
-                    'lib/images/logo.png',
+                    'lib/images/logo-transparent-png.png',
                     width: mediaQuery.size.width * .8,
                   ),
                   Text(
@@ -41,9 +41,11 @@ class LogInfoList extends StatelessWidget {
                       builder: (context, state) {
                     return Positioned(
                       bottom: MediaQuery.of(context).size.height * 0.2,
-                      top: MediaQuery.of(context).size.height * 0.2,
-                      right: MediaQuery.of(context).size.width * 0.25,
-                      left: MediaQuery.of(context).size.width * 0.25,
+                      top: MediaQuery.of(context).size.height * 0.1,
+                      right: MediaQuery.of(context).size.width * 0.20,
+                      left: MediaQuery.of(context).size.width < 400
+                          ? MediaQuery.of(context).size.width * 0.30
+                          : MediaQuery.of(context).size.width * 0.20,
                       child: state.img != null
                           ? ClipRRect(
                               borderRadius: BorderRadius.circular(99),
@@ -55,7 +57,7 @@ class LogInfoList extends StatelessWidget {
                                 ),
                                 child: ColorFiltered(
                                   colorFilter: ColorFilter.mode(
-                                      Colors.black.withOpacity(0.7),
+                                      Colors.black.withOpacity(0.2),
                                       BlendMode.dstATop),
                                   child: Image.memory(
                                     Uint8List.fromList(
@@ -90,8 +92,10 @@ class LogInfoList extends StatelessWidget {
                                     logEntryItem(index, notes_index,
                                         curScaleFactor, context, state),
                                     Divider(
+                                      indent: 20,
+                                      endIndent: 20,
                                       height: 0.8,
-                                      thickness: 0.5,
+                                      thickness: 2,
                                     )
                                   ],
                                 );

@@ -69,7 +69,8 @@ flutter:
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:
-  assets:    
+  assets:   
+    - lib/images/ 
     - lib/images/logo-transparent-png.png
     - lib/images/Biohazardous.png
     - lib/images/Causing_other toxic_effects.png

@@ -134,6 +134,10 @@ class _MainLogEntryState extends State<MainLogEntry> {
     if (BlocProvider.of<DailyReportsCubit>(context).state.location == "" ||
         BlocProvider.of<DailyReportsCubit>(context).state.weather == "")
       await getCurrentPosition(context);
+    checkValidations();
+  }
+
+  void checkValidations() {
     if (BlocProvider.of<DailyReportsCubit>(context).state.location == "" ||
         BlocProvider.of<DailyReportsCubit>(context).state.weather == "") {
       showDialog(
@@ -558,7 +562,12 @@ class _MainLogEntryState extends State<MainLogEntry> {
             appBar: appBar,
             body: isloading
                 ? Center(child: const CircularProgressIndicator())
-                : pageBody,
+                : RefreshIndicator(
+                    onRefresh: () async {
+                      await getCurrentPosition(context);
+                      checkValidations();
+                    },
+                    child: pageBody),
             drawer: Drawer(
                 child: MainDrawer(
               lstcompany: companyProvider?.state.lstcompany ?? [],

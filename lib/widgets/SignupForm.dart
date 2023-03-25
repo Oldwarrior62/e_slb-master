@@ -55,7 +55,8 @@ class _SignupFormState extends State<SignupForm> {
             surname: surname,
             email: email,
             password: passwd,
-            image: String.fromCharCodes(File(img!.path).readAsBytesSync()));
+            image: String.fromCharCodes(File(img!.path).readAsBytesSync()),
+            isLogin: "true");
         db.saveData(uModel).then(
           (value) {
             if (value == -1) {

@@ -1,10 +1,14 @@
 // ignore_for_file: must_be_immutable
 
+import 'dart:convert';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_complete_guide/Bloc/Company/company_state.dart';
 import 'package:flutter_complete_guide/Bloc/User/userCubit.dart';
+import 'package:flutter_complete_guide/models/UserModel.dart';
+import 'package:flutter_complete_guide/models/user_model.dart';
 
 import 'package:flutter_complete_guide/widgets/add_company.dart';
 import 'package:flutter_complete_guide/widgets/google_map.dart';
@@ -200,7 +204,10 @@ class _MainDrawerState extends State<MainDrawer> {
             }),
             _buildListTile('Log Out', Icons.logout, () async {
               SharedPreferences sp = await SharedPreferences.getInstance();
-              await sp.setString('userData', "");
+              UserModel userModel = context.read<UserCubit>().state.userModel!;
+              userModel.isLogin = "false";
+
+              await sp.setString('userData', jsonEncode(userModel.toMap()));
               Navigator.pushAndRemoveUntil(
                   context,
                   MaterialPageRoute(builder: (_) => LoginForm()),

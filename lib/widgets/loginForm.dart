@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_complete_guide/Bloc/User/userCubit.dart';
 import 'package:flutter_complete_guide/comm/loading.dart';
 import 'package:flutter_complete_guide/widgets/main_log_entry.dart';
+import 'package:flutter_complete_guide/widgets/verify.dart';
 import '../comm/commHelper.dart';
 import '../comm/genLoginSignupHeader.dart';
 import '../comm/genTextFormField.dart';
@@ -23,6 +24,7 @@ class _LoginFormState extends State<LoginForm> {
   final _conUserId = TextEditingController();
   final _conPassword = TextEditingController();
   var dbHelper;
+  String? userData;
 
   @override
   void initState() {
@@ -34,6 +36,7 @@ class _LoginFormState extends State<LoginForm> {
 
   getfont() async {
     SharedPreferences sp = await SharedPreferences.getInstance();
+    userData = sp.getString("userData");
     bool? dyslexic = sp.getBool("dyslexic");
     if (dyslexic != null) {
       BlocProvider.of<UserCubit>(context).state.isDyslexic = dyslexic;
@@ -45,6 +48,7 @@ class _LoginFormState extends State<LoginForm> {
     } else {
       BlocProvider.of<UserCubit>(context).state.font = "OpenSans";
     }
+    setState(() {});
   }
 
   login() async {
@@ -104,7 +108,7 @@ class _LoginFormState extends State<LoginForm> {
                   getTextFormField(
                       controller: _conUserId,
                       icon: Icons.person,
-                      hintName: 'Surname'),
+                      hintName: 'Lastname'),
                   SizedBox(height: 10.0),
                   getTextFormField(
                     controller: _conPassword,
@@ -128,31 +132,49 @@ class _LoginFormState extends State<LoginForm> {
                       borderRadius: BorderRadius.circular(30.0),
                     ),
                   ),
-                  Container(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          'Do not have account? ',
-                          style: TextStyle(
-                              fontFamily:
-                                  context.watch<UserCubit>().state.font),
-                        ),
-                        TextButton(
-                          child: Text(
-                            'Signup',
-                            selectionColor: Colors.blue,
+                  userData == null
+                      ? Container(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                'Do not have account? ',
+                                style: TextStyle(
+                                    fontFamily:
+                                        context.watch<UserCubit>().state.font),
+                              ),
+                              TextButton(
+                                child: Text(
+                                  'Signup',
+                                  selectionColor: Colors.blue,
+                                ),
+                                onPressed: () {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (_) => SignupForm()));
+                                },
+                              )
+                            ],
                           ),
-                          onPressed: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (_) => SignupForm()));
-                          },
                         )
-                      ],
-                    ),
-                  ),
+                      : Container(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              TextButton(
+                                child: Text(
+                                  'Forgot Password?',
+                                  selectionColor: Colors.blue,
+                                ),
+                                onPressed: () {
+                                  Navigator.pushNamed(
+                                      context, VerifyScreen.routeName);
+                                },
+                              )
+                            ],
+                          ),
+                        ),
                 ],
               ),
             ),

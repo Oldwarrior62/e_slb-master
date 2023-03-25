@@ -26,18 +26,25 @@ class _SplashScreenState extends State<SplashScreen> {
     SharedPreferences sp = await SharedPreferences.getInstance();
     String? data = sp.getString("userData");
     UserModel? userData;
-    if (data != null && data != "") {
-      userData = UserModel.fromMap(jsonDecode(data));
-      BlocProvider.of<UserCubit>(context).setUser(userData);
-      Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(builder: (_) => MainLogEntry()),
-          (Route<dynamic> route) => false);
-    } else {
+    if (data == null) {
       Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(builder: (_) => LoginForm()),
           (Route<dynamic> route) => false);
+    } else {
+      userData = UserModel.fromMap(jsonDecode(data));
+      if (userData.isLogin == "true") {
+        BlocProvider.of<UserCubit>(context).setUser(userData);
+        Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (_) => MainLogEntry()),
+            (Route<dynamic> route) => false);
+      } else {
+        Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (_) => LoginForm()),
+            (Route<dynamic> route) => false);
+      }
     }
   }
 

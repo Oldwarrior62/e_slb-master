@@ -69,7 +69,7 @@ Future<void> getCurrentPosition(BuildContext context) async {
   if (!hasPermission) return;
   try {
     await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high)
-        .timeout(Duration(seconds: 10))
+        .timeout(Duration(seconds: 30))
         .then((Position position) async {
       provider.location =
           await getAddressFromLatLng(position, provider.location);
@@ -83,8 +83,8 @@ Future<void> getCurrentPosition(BuildContext context) async {
               position.latitude, position.longitude);
           context.read<UserCubit>().setPosition(position);
           if (w.temperature != null)
-            provider.weather =
-                "${w.weatherDescription} ${w.temperature!.celsius.toString().substring(0, 4)} C";
+            context.read<DailyReportsCubit>().setWeather(
+                "${w.weatherDescription} ${w.temperature!.celsius.toString().substring(0, 4)} C");
         } catch (e) {
           provider.location = "";
           provider.weather = "";

@@ -150,8 +150,7 @@ class _AppendicesDrawerState extends State<AppendicesDrawer> {
             _buildListTile('Note Taking', Icons.notes, () {
               Navigator.of(context).pushReplacementNamed(NoteTaking.routeName);
             }),
-            _buildListTile('Discription of Persons/Vehicles', Icons.person_3,
-                () {
+            _buildListTile('Discription of Persons/Vehicles', Icons.person, () {
               Navigator.of(context)
                   .pushReplacementNamed(DiscriptionOfPerson.routeName);
             }),
@@ -167,7 +166,7 @@ class _AppendicesDrawerState extends State<AppendicesDrawer> {
               Navigator.of(context)
                   .pushReplacementNamed(PhoneticAlphabit.routeName);
             }),
-            _buildListTile('Patrols', Icons.person_2, () {
+            _buildListTile('Patrols', Icons.person, () {
               Navigator.of(context).pushReplacementNamed(Patrols.routeName);
             }),
             _buildListTile(

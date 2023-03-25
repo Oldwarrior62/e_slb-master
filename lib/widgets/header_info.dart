@@ -1,7 +1,5 @@
 // ignore_for_file: must_be_immutable
 
-import 'package:expandable/expandable.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_complete_guide/Bloc/Company/company_state.dart';
@@ -62,7 +60,7 @@ class _HeaderInfoState extends State<HeaderInfo> {
                             fontFamily: context.watch<UserCubit>().state.font),
                       )
                     : Image.asset(
-                        'lib/images/logo.png',
+                        'lib/images/logo-transparent-png.png',
                         width: MediaQuery.of(context).size.width * .2,
                       ),
                 const SizedBox(

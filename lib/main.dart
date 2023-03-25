@@ -10,8 +10,10 @@ import 'package:flutter_complete_guide/Bloc/Notes/notesCubit.dart';
 import 'package:flutter_complete_guide/Bloc/User/userCubit.dart';
 import 'package:flutter_complete_guide/Bloc/User/userState.dart';
 import 'package:flutter_complete_guide/appendices/10_codes_display.dart';
+import 'package:flutter_complete_guide/widgets/change_password.dart';
 import 'package:flutter_complete_guide/widgets/detail.dart';
 import 'package:flutter_complete_guide/widgets/google_map.dart';
+import 'package:flutter_complete_guide/widgets/verify.dart';
 import 'package:flutter_complete_guide/widgets/signature.dart';
 import 'package:flutter_complete_guide/widgets/splash_screen.dart';
 import 'package:flutter_complete_guide/widgets/updateProfile.dart';
@@ -126,6 +128,9 @@ class MyApp extends StatelessWidget {
             TenCodesDisplay.routeName: (context) => TenCodesDisplay(),
             GetLocation.routeName: ((context) => GetLocation()),
             DetailScreen.routeName: (context) => DetailScreen(),
+            VerifyScreen.routeName: (context) => VerifyScreen(),
+            ChangePasswordScreen.routeName: ((context) =>
+                ChangePasswordScreen())
           },
         ),
       ),

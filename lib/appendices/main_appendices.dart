@@ -40,7 +40,7 @@ class _AppendicesMainState extends State<AppendicesMain> {
             children: [
               Column(
                 children: [
-                  Icon(Icons.person_2_outlined),
+                  Icon(Icons.person),
                   // getTextFormField(
                   //     controller: _conUserName,
                   //     icon: Icons.person,
