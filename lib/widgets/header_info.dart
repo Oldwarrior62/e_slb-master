@@ -79,7 +79,6 @@ class _HeaderInfoState extends State<HeaderInfo> {
                 '${BlocProvider.of<UserCubit>(context).state.userModel!.surname.toString()}${BlocProvider.of<UserCubit>(context).state.userModel!.name?.substring(0, 1)}',
                 style: TextStyle(
                   fontFamily: context.watch<UserCubit>().state.font,
-                  fontWeight: FontWeight.bold,
                   fontSize: 14 * curScaleFactor,
                 ),
               ),
@@ -88,7 +87,6 @@ class _HeaderInfoState extends State<HeaderInfo> {
               Text(
                 date,
                 style: TextStyle(
-                    fontWeight: FontWeight.bold,
                     fontSize: 14 * curScaleFactor,
                     fontFamily: context.watch<UserCubit>().state.font),
               ),
@@ -100,9 +98,8 @@ class _HeaderInfoState extends State<HeaderInfo> {
           child: Container(
             child: Text(
               '${context.read<DailyReportsCubit>().state.weather}',
-              style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontFamily: context.watch<UserCubit>().state.font),
+              style:
+                  TextStyle(fontFamily: context.watch<UserCubit>().state.font),
             ),
           ),
         ),
@@ -112,7 +109,6 @@ class _HeaderInfoState extends State<HeaderInfo> {
             child: Text(
               '${context.read<DailyReportsCubit>().state.location}',
               style: TextStyle(
-                  fontWeight: FontWeight.bold,
                   fontSize: 14 * curScaleFactor,
                   fontFamily: context.watch<UserCubit>().state.font),
             ),
@@ -371,11 +367,11 @@ class _HeaderInfoState extends State<HeaderInfo> {
 
     if (provider.state.dailyReportNotes == null) {
       DailyReportNotes dailyReport = DailyReportNotes(
-          dailyReportId: 0,
-          notes: note,
-          logs: [],
-          dateCreated: Date,
-          signature: "");
+        dailyReportId: 0,
+        notes: note,
+        logs: [],
+        dateCreated: Date,
+      );
       provider.setDailyReports(dailyReport);
       provider.state.lstdailyreports.add(dailyReport);
       List<DailyReportNotes> templst = provider.state.lstdailyreports;

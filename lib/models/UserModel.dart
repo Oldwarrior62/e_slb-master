@@ -33,6 +33,7 @@ class UserModel {
   String? ofaExpiryDate;
   String? ofaLevel;
   String? isLogin;
+  String? signature;
 
   UserModel(
       {this.userId,
@@ -46,7 +47,8 @@ class UserModel {
       this.securityLicenseExpiryDate,
       this.ofaExpiryDate,
       this.ofaLevel,
-      this.isLogin});
+      this.isLogin,
+      this.signature});
 
   // Future<int> saveData(UserModel user) async {
   //   var dbClient = await _db;
@@ -70,6 +72,7 @@ class UserModel {
     this.ofaExpiryDate = obj['ofaExpiryDate'];
     this.ofaLevel = obj['ofaLevel'];
     this.isLogin = obj['isLogin'].toString();
+    this.signature = obj['signature'];
   }
   Map<String, dynamic> toMap() {
     var map = <String, dynamic>{
@@ -81,7 +84,8 @@ class UserModel {
       'securityLicenseExpiryDate': securityLicenseExpiryDate,
       'ofaExpiryDate': ofaExpiryDate,
       'ofaLevel': ofaLevel,
-      'isLogin': isLogin
+      'isLogin': isLogin,
+      'signature': signature
     };
     return map;
   }

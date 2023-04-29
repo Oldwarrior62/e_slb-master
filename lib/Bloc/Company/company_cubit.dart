@@ -6,7 +6,7 @@ import 'package:image_picker/image_picker.dart';
 class CompanyCubit extends Cubit<CompanyState> {
   CompanyCubit() : super(CompanyState());
 
-  setCompany(Company company) {
+  setCompany(Company? company) {
     emit(state.copywith(company: company));
   }
 
@@ -16,5 +16,17 @@ class CompanyCubit extends Cubit<CompanyState> {
 
   setImage(XFile image) {
     emit(state.copywith(img: image));
+  }
+
+  setSelectedStartTime(String value, int index) {
+    emit(state.copywith(selectedStartTime: value, selectedIndex: index));
+  }
+
+  setSelectedEndTime(String value, int index) {
+    emit(state.copywith(selectedEndTime: value, selectedIndex: index));
+  }
+
+  setSelectedIndex(int value) {
+    emit(state.copywith(selectedIndex: value));
   }
 }

@@ -31,9 +31,12 @@ class DbHelper {
 CREATE TABLE dailyReport(
   dailyReportId INTEGER PRIMARY KEY AUTOINCREMENT,
   logs TEXT,
+  weather TEXT,
+  company TEXT,
+  location TEXT,
+  logo TEXT,
   dateCreated TEXT,
-  notes TEXT,
-  signature TEXT
+  notes TEXT
 )
 ''');
     await db.execute('''
@@ -46,7 +49,8 @@ CREATE TABLE user(
   securityLicenseExpiryDate TEXT,
   ofaExpiryDate TEXT,
   ofaLevel Text,
-  isLogin Text
+  isLogin Text,
+  signature Text
 )
 ''');
     await db.execute('''
@@ -61,7 +65,8 @@ CREATE TABLE company(
  companyId INTEGER  PRIMARY KEY AUTOINCREMENT, 
  comapnyName TEXT,
  companyEmail Text,
- image Text
+ image Text,
+ lstShifts Text
 )
 
 ''');
@@ -109,6 +114,13 @@ CREATE TABLE company(
   Future<int?> insertCompanyData(Company company) async {
     Database db = await instance.database;
     int result = await db.insert('company', company.toMap());
+    return result;
+  }
+
+  Future<int?> updateCompanyData(Company company) async {
+    Database db = await instance.database;
+    int result = await db.update('company', company.toMap(),
+        where: 'companyId=?', whereArgs: [company.companyId]);
     return result;
   }
 

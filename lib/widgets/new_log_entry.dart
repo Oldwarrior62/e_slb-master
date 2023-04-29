@@ -32,7 +32,7 @@ class _NewLogEntryState extends State<NewLogEntry> {
     if (enteredLog.isEmpty) {
       return;
     } else if (widget.selectedvalue == null) {
-      alertDialog(context, "Company Must be Selected..");
+      alertDialog(context, "Company Must be Selected or Shift not Started..");
       Navigator.of(context).pop();
     } else {
       final provider = BlocProvider.of<DailyReportsCubit>(context);
@@ -40,22 +40,23 @@ class _NewLogEntryState extends State<NewLogEntry> {
       String tempTime = DateTime.now().toString().split(' ')[1].split('.')[0];
       String Time = "${tempTime.split(':')[0]}:${tempTime.split(':')[1]}";
       DbHelper db = DbHelper.instance;
-      Log log = Log(
-          entryController.text,
-          Time,
-          widget.weather,
-          widget.selectedvalue!.companyName,
-          widget.location,
-          0,
-          widget.selectedvalue!.image,
-          isline: false);
-      if (provider.state.dailyReportNotes == null) {
+      Log log = Log(entryController.text, Time, 0, isline: false);
+      if (provider.state.dailyReportNotes == null ||
+          provider.state.lstdailyreports
+              .where((e) =>
+                  e.dateCreated == Date &&
+                  e.company == widget.selectedvalue!.companyName)
+              .toList()
+              .isEmpty) {
         DailyReportNotes dailyReport = DailyReportNotes(
             dailyReportId: 0,
             notes: "",
             logs: [log],
             dateCreated: Date,
-            signature: "");
+            weather: widget.weather,
+            company: widget.selectedvalue!.companyName,
+            location: widget.location,
+            logo: widget.selectedvalue!.image);
         db.insertDailyReport(dailyReport).then((value) {
           dailyReport.dailyReportId = value;
           alertDialog(context, "Report Added");
@@ -66,16 +67,29 @@ class _NewLogEntryState extends State<NewLogEntry> {
         provider.setListDailyReports(
             templst, BlocProvider.of<DailyReportsCubit>(context).state.log);
       } else {
-        provider.state.dailyReportNotes!.logs.add(log);
-        provider.state.lstdailyreports
-            .removeAt(provider.state.lstdailyreports.length - 1);
-        provider.state.lstdailyreports.add(provider.state.dailyReportNotes!);
-        List<DailyReportNotes> templst = provider.state.lstdailyreports;
+        List<DailyReportNotes> templst = [];
+        for (DailyReportNotes dailyReportNotes
+            in provider.state.lstdailyreports) {
+          if (dailyReportNotes.dateCreated == Date &&
+              dailyReportNotes.company == widget.selectedvalue!.companyName) {
+            dailyReportNotes.logs.add(log);
+          }
+          templst.add(dailyReportNotes);
+        }
+
+        // provider.state.dailyReportNotes!.logs.add(log);
+        // provider.state.lstdailyreports
+        //     .removeAt(provider.state.lstdailyreports.length - 1);
+        // provider.state.lstdailyreports.add(provider.state.dailyReportNotes!);
+
         provider.setListDailyReports(
             templst, BlocProvider.of<DailyReportsCubit>(context).state.log);
-
         db
-            .updateDailyReportNotes(provider.state.dailyReportNotes!)
+            .updateDailyReportNotes(templst
+                .where((e) =>
+                    e.dateCreated == Date &&
+                    e.company == widget.selectedvalue!.companyName)
+                .first)
             .then((value) {
           alertDialog(context, "Report Added");
         });

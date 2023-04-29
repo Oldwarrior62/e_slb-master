@@ -22,10 +22,10 @@ class DailyReportsCubit extends Cubit<DailyReportsState> {
   setListDailyReports(List<DailyReportNotes> dailyReportsState, bool islog) {
     List<DailyReportNotes> temp = [];
     for (DailyReportNotes i in dailyReportsState) {
-      i.logs.sort((a, b) {
-        int nameComparison = a.company!.compareTo(b.company!);
-        return nameComparison;
-      });
+      // i.logs.sort((a, b) {
+      //   int nameComparison = a.company!.compareTo(b.company!);
+      //   return nameComparison;
+      // });
       temp.add(i);
     }
 
@@ -53,38 +53,24 @@ class DailyReportsCubit extends Cubit<DailyReportsState> {
   setTempList(String text) {
     List<DailyReportNotes> temp = [];
     for (DailyReportNotes i in state.lstdailyreports) {
-      if (i.dailyReportId != null) {
-        DailyReportNotes d = DailyReportNotes(
-            notes: i.notes,
-            dailyReportId: i.dailyReportId,
-            dateCreated: i.dateCreated,
-            logs: i.logs,
-            signature: i.signature);
-        temp.add(d);
-      }
+      DailyReportNotes d = DailyReportNotes(
+          notes: i.notes,
+          dailyReportId: i.dailyReportId,
+          dateCreated: i.dateCreated,
+          logs: i.logs,
+          weather: i.weather,
+          location: i.location,
+          company: i.company,
+          logo: i.logo);
+      temp.add(d);
     }
     if (state.filter) {
-      for (DailyReportNotes dailyReportNotes in state.lstdailyreports) {
-        List<Log> lst = [];
-        for (Log i in dailyReportNotes.logs) {
-          if (i.company!.contains(text)) {
-            lst.add(i);
-          }
-        }
-
-        if (lst.length == 0) {
-          temp.removeWhere((element) =>
-              element.dailyReportId == dailyReportNotes.dailyReportId);
-        } else {
-          if (state.tempdailyreports.length > 0) {
-            temp
-                .where((element) =>
-                    element.dailyReportId == dailyReportNotes.dailyReportId)
-                .first
-                .logs = lst;
-          }
-        }
-      }
+      temp = temp
+          .where((element) => element.company!
+              .toLowerCase()
+              .toString()
+              .contains(text.toLowerCase()))
+          .toList();
     } else {
       temp = temp.where((e) => e.dateCreated!.contains(text)).toList();
     }

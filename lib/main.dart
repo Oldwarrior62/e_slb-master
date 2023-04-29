@@ -11,8 +11,12 @@ import 'package:flutter_complete_guide/Bloc/User/userCubit.dart';
 import 'package:flutter_complete_guide/Bloc/User/userState.dart';
 import 'package:flutter_complete_guide/appendices/10_codes_display.dart';
 import 'package:flutter_complete_guide/widgets/change_password.dart';
+import 'package:flutter_complete_guide/widgets/company_shift.dart';
 import 'package:flutter_complete_guide/widgets/detail.dart';
 import 'package:flutter_complete_guide/widgets/google_map.dart';
+import 'package:flutter_complete_guide/widgets/search.dart';
+import 'package:flutter_complete_guide/widgets/update_company_shift_details.dart';
+import 'package:flutter_complete_guide/widgets/update_company_shifts.dart';
 import 'package:flutter_complete_guide/widgets/verify.dart';
 import 'package:flutter_complete_guide/widgets/signature.dart';
 import 'package:flutter_complete_guide/widgets/splash_screen.dart';
@@ -130,7 +134,12 @@ class MyApp extends StatelessWidget {
             DetailScreen.routeName: (context) => DetailScreen(),
             VerifyScreen.routeName: (context) => VerifyScreen(),
             ChangePasswordScreen.routeName: ((context) =>
-                ChangePasswordScreen())
+                ChangePasswordScreen()),
+            SearchScreen.routeName: (context) => SearchScreen(),
+            AddCompanyShift.routeName: (context) => AddCompanyShift(),
+            UpdateCompanyShifts.routeName: (context) => UpdateCompanyShifts(),
+            UpdateCompanyShiftDetails.routeName: (context) =>
+                UpdateCompanyShiftDetails()
           },
         ),
       ),

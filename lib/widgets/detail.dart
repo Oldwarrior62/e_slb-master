@@ -1,8 +1,6 @@
 // ignore_for_file: must_be_immutable
 import 'dart:io';
 import 'dart:typed_data';
-import 'dart:ui';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_complete_guide/Bloc/Company/company_cubit.dart';
@@ -11,31 +9,41 @@ import 'package:flutter_complete_guide/Bloc/User/userCubit.dart';
 import 'package:flutter_complete_guide/Bloc/User/userState.dart';
 import 'package:flutter_complete_guide/comm/commHelper.dart';
 import 'package:flutter_complete_guide/comm/loading.dart';
-import 'package:flutter_complete_guide/models/company_model.dart';
+import 'package:flutter_complete_guide/models/daily_report_model.dart';
 import 'package:intl/intl.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:screenshot/screenshot.dart';
+import '../Bloc/Company/company_state.dart';
 import '../Bloc/DailyReportNotes/dailyreports_state.dart';
 import 'main_drawer.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart ' as pw;
 
 class DetailScreen extends StatelessWidget {
-  DetailScreen({Key? key}) : super(key: key);
+  DetailScreen({Key? key, this.dailyReportNotes}) : super(key: key);
   static const routeName = '/detail';
 
-  List<Company> lstcompany = [];
-
   final String date = DateFormat.yMMMMd().format(DateTime.now());
-  String? currentValue;
-  int pageNumber = 0;
+  DailyReportNotes? dailyReportNotes;
 
   @override
   Widget build(BuildContext context) {
+    GlobalKey _key = GlobalKey();
     final userProvider = BlocProvider.of<UserCubit>(context);
     final companyProvider = BlocProvider.of<CompanyCubit>(context);
+    List<DailyReportNotes> lst = BlocProvider.of<DailyReportsCubit>(context)
+        .state
+        .lstdailyreports
+        .where((element) =>
+            element.dateCreated == DateTime.now().toString().split(' ')[0])
+        .toList();
+    if (dailyReportNotes != null) {
+      lst = [];
+      lst.add(dailyReportNotes!);
+    }
     return Scaffold(
+      key: _key,
       appBar: AppBar(
         title: Text("Detail Page"),
       ),
@@ -48,147 +56,144 @@ class DetailScreen extends StatelessWidget {
           padding: const EdgeInsets.all(8.0),
           child: Column(
             children: [
-              Row(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(
-                        left: 8.0, right: 8.0, top: 8.0, bottom: 16.0),
-                    child: Container(
-                      width: MediaQuery.of(context).size.width * 0.8,
-                      child: CupertinoSearchTextField(
-                        onChanged: (value) => context
-                            .read<DailyReportsCubit>()
-                            .setTempList(value),
-                      ),
-                    ),
-                  ),
-                  InkWell(
-                    onTap: () {
-                      showDialog(
-                          context: context,
-                          builder: ((context) => AlertDialog(
-                                content: Container(
-                                  height: 150,
-                                  child: Column(
-                                    children: [
-                                      InkWell(
-                                        onTap: () {
-                                          BlocProvider.of<DailyReportsCubit>(
-                                                  context)
-                                              .setFilter(false);
-                                          Navigator.pop(context);
-                                        },
-                                        child: ListTile(
-                                          leading: Icon(Icons.date_range),
-                                          title: Text("Date"),
-                                        ),
-                                      ),
-                                      Divider(),
-                                      InkWell(
-                                        onTap: () {
-                                          BlocProvider.of<DailyReportsCubit>(
-                                                  context)
-                                              .setFilter(true);
-                                          Navigator.pop(context);
-                                        },
-                                        child: ListTile(
-                                          leading: Icon(Icons.home_max),
-                                          title: Text("Company"),
-                                        ),
-                                      )
-                                    ],
-                                  ),
-                                ),
-                                title: Text("Select Filter"),
-                              )));
-                    },
-                    child: Container(
-                      decoration: BoxDecoration(
-                          color: Colors.yellow.shade700,
-                          borderRadius: BorderRadius.circular(99.0)),
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Icon(
-                          Icons.filter,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                  )
-                ],
-              ),
               BlocBuilder<DailyReportsCubit, DailyReportsState>(
                   builder: (context, state) {
                 return Screenshot(
-                  controller: state.screenshotController,
-                  child: ListView.builder(
-                      shrinkWrap: true,
+                    controller: state.screenshotController,
+                    child: ListView.builder(
                       physics: const BouncingScrollPhysics(),
-                      itemCount: state.tempdailyreports.length,
-                      itemBuilder: (context, index) {
-                        return ListView(
-                          shrinkWrap: true,
-                          physics: const BouncingScrollPhysics(),
-                          children: [
-                            ListView.builder(
-                                padding: EdgeInsets.zero,
-                                shrinkWrap: true,
-                                physics: const BouncingScrollPhysics(),
-                                itemCount:
-                                    state.tempdailyreports[index].logs.length,
-                                itemBuilder: (context, notes_index) {
-                                  bool status = false;
-                                  bool signatureStatus = false;
-                                  bool headerSatus = false;
-                                  if (notes_index == 0) {
-                                    status = true;
-                                    currentValue = state.tempdailyreports[index]
-                                        .logs[notes_index].company;
-                                  } else if (currentValue !=
-                                      state.tempdailyreports[index]
-                                          .logs[notes_index].company) {
-                                    status = true;
-                                    currentValue = state.tempdailyreports[index]
-                                        .logs[notes_index].company;
-                                  } else {
-                                    status = false;
-                                    signatureStatus = false;
-                                    headerSatus = false;
-                                  }
-                                  if (state
-                                          .tempdailyreports[index].logs.length >
-                                      notes_index + 1) {
-                                    if (currentValue !=
-                                        state.tempdailyreports[index]
-                                            .logs[notes_index + 1].company) {
-                                      signatureStatus = true;
-                                      headerSatus = true;
-                                      pageNumber++;
-                                    }
-                                  } else if (state.tempdailyreports[index].logs
-                                              .length -
-                                          1 ==
-                                      notes_index) {
-                                    signatureStatus = true;
-                                    pageNumber++;
-                                  }
-                                  return logEntryItem(
-                                      index,
-                                      notes_index,
-                                      context,
-                                      state,
-                                      status,
-                                      signatureStatus,
-                                      headerSatus,
-                                      userProvider);
+                      shrinkWrap: true,
+                      itemCount: lst.length,
+                      itemBuilder: (context, index) => ListView(
+                        shrinkWrap: true,
+                        physics: const BouncingScrollPhysics(),
+                        children: [
+                          Row(
+                            children: [
+                              SizedBox(
+                                width: MediaQuery.of(context).size.width * 0.35,
+                              ),
+                              Text(
+                                lst[index].company.toString(),
+                                style: TextStyle(
+                                    fontFamily:
+                                        context.watch<UserCubit>().state.font,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                              const SizedBox(
+                                width: 10,
+                              ),
+                            ],
+                          ),
+                          header(userProvider, state, lst, index, context),
+                          Container(
+                            child: Stack(
+                              children: [
+                                BlocBuilder<CompanyCubit, CompanyState>(
+                                    builder: (context, state) {
+                                  return Center(
+                                    child: Column(
+                                      children: [
+                                        const SizedBox(
+                                          height: 40,
+                                        ),
+                                        Positioned(
+                                          child: lst[index].logo != null
+                                              ? ClipRRect(
+                                                  borderRadius:
+                                                      BorderRadius.circular(99),
+                                                  child: Container(
+                                                    height: 100,
+                                                    width: 100,
+                                                    decoration: BoxDecoration(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              99),
+                                                    ),
+                                                    child: ColorFiltered(
+                                                      colorFilter:
+                                                          ColorFilter.mode(
+                                                              Colors.black
+                                                                  .withOpacity(
+                                                                      0.2),
+                                                              BlendMode
+                                                                  .dstATop),
+                                                      child: Image.memory(
+                                                        Uint8List.fromList(
+                                                            lst[index]
+                                                                .logo!
+                                                                .codeUnits),
+                                                        fit: BoxFit.fill,
+                                                        gaplessPlayback: true,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                )
+                                              : const Padding(
+                                                  padding: EdgeInsets.zero,
+                                                ),
+                                        ),
+                                      ],
+                                    ),
+                                  );
                                 }),
-                            const SizedBox(
-                              height: 5,
+                                ListView(
+                                  physics: const BouncingScrollPhysics(),
+                                  shrinkWrap: true,
+                                  children: [
+                                    ListView.builder(
+                                      physics: const BouncingScrollPhysics(),
+                                      shrinkWrap: true,
+                                      itemBuilder: (ctx, notes_index) {
+                                        return Column(
+                                          children: [
+                                            logEntryItem(index, notes_index,
+                                                context, state, lst),
+                                            Divider(
+                                              indent: 20,
+                                              endIndent: 20,
+                                              height: 0.8,
+                                              thickness: 2,
+                                            )
+                                          ],
+                                        );
+                                      },
+                                      itemCount: lst[index].logs.length,
+                                    ),
+                                    const SizedBox(
+                                      height: 10,
+                                    ),
+                                    Column(
+                                      children: [
+                                        signature(lst, index, context),
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.end,
+                                          children: [
+                                            Padding(
+                                              padding: const EdgeInsets.only(
+                                                  right: 10.0),
+                                              child: mytext(
+                                                  "Page ",
+                                                  (index + 1).toString(),
+                                                  context),
+                                            ),
+                                          ],
+                                        ),
+                                        const Divider()
+                                      ],
+                                    )
+                                  ],
+                                ),
+                              ],
                             ),
-                          ],
-                        );
-                      }),
-                );
+                          ),
+                          const SizedBox(
+                            height: 15,
+                          ),
+                        ],
+                      ),
+                    ));
               }),
               ElevatedButton(
                   onPressed: () async {
@@ -212,7 +217,26 @@ class DetailScreen extends StatelessWidget {
     );
   }
 
-  Column header(UserCubit userProvider, DailyReportsState state, int index,
+  ListTile logEntryItem(int index, int notes_index, BuildContext context,
+      DailyReportsState state, List<DailyReportNotes> lst) {
+    return ListTile(
+      leading: Text(
+        "${lst[index].logs[notes_index].timeCreated.toString()} |",
+        style: TextStyle(
+          fontSize: 16,
+        ),
+      ),
+      title: lst[index].logs[notes_index].isline!
+          ? Text(
+              lst[index].logs[notes_index].log.toString(),
+              style: TextStyle(decoration: TextDecoration.lineThrough),
+            )
+          : Text(lst[index].logs[notes_index].log.toString()),
+    );
+  }
+
+  Column header(UserCubit userProvider, DailyReportsState state,
+      List<DailyReportNotes> lst, int index, BuildContext context,
       {int? logIndex}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -220,18 +244,17 @@ class DetailScreen extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            mytext("",
-                "${userProvider.state.userModel!.surname.toString()}${userProvider.state.userModel!.name.toString().substring(0, 1)}"),
-            mytext("", state.tempdailyreports[index].dateCreated.toString())
+            mytext(
+                "",
+                "${userProvider.state.userModel!.surname.toString()}${userProvider.state.userModel!.name.toString().substring(0, 1)}",
+                context),
+            mytext("", state.dailyReportNotes!.dateCreated.toString(), context)
           ],
         ),
         const SizedBox(
           height: 15,
         ),
-        mytext(
-            "",
-            state.tempdailyreports[index].logs[logIndex ?? 0].weather
-                .toString()),
+        mytext("", state.dailyReportNotes!.weather.toString(), context),
         const SizedBox(
           height: 15,
         ),
@@ -239,16 +262,16 @@ class DetailScreen extends StatelessWidget {
           children: [
             Flexible(
               child: mytext(
-                  "",
-                  state.tempdailyreports[index].logs[logIndex ?? 0].location
-                      .toString()),
+                  "", state.dailyReportNotes!.location.toString(), context),
             )
           ],
         ),
         userProvider.state.userModel!.ofaExpiryDate.toString() == "null"
             ? const Padding(padding: EdgeInsets.zero)
-            : mytext("OFA: ",
-                userProvider.state.userModel!.ofaExpiryDate.toString()),
+            : mytext(
+                "OFA: ",
+                userProvider.state.userModel!.ofaExpiryDate.toString(),
+                context),
         const SizedBox(
           height: 10,
         ),
@@ -257,45 +280,51 @@ class DetailScreen extends StatelessWidget {
             : mytext(
                 "Security: ",
                 userProvider.state.userModel!.securityLicenseExpiryDate
-                    .toString()),
+                    .toString(),
+                context),
         const SizedBox(
           height: 15,
         ),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              "Notes:",
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
-            Text(
-              state.tempdailyreports[index].notes.toString(),
-              softWrap: true,
-            ),
-          ],
-        ),
+        lst[index].notes != null
+            ? state.dailyReportNotes!.notes != ""
+                ? Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "Notes:",
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      Text(
+                        lst[index].notes.toString(),
+                        softWrap: true,
+                      ),
+                    ],
+                  )
+                : const Padding(padding: EdgeInsets.zero)
+            : const Padding(padding: EdgeInsets.zero),
       ],
     );
   }
 
-  Padding signature(DailyReportsState state, int index) {
+  Padding signature(
+      List<DailyReportNotes> lst, int index, BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(12.0),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.end,
+        mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          mytext("Signature", ""),
+          mytext("Signature", "", context),
           Container(
-            height: 100,
-            width: 100,
-            child: state.tempdailyreports[index].signature != ""
-                ? Image.memory(
-                    convertStringToUint8List(
-                        state.tempdailyreports[index].signature.toString()),
-                    fit: BoxFit.fill,
-                  )
-                : Text(""),
-          ),
+              height: 100,
+              child: Image.memory(
+                convertStringToUint8List(context
+                    .read<UserCubit>()
+                    .state
+                    .userModel!
+                    .signature
+                    .toString()),
+                fit: BoxFit.fill,
+              )),
         ],
       ),
     );
@@ -310,8 +339,7 @@ class DetailScreen extends StatelessWidget {
           pageFormat: PdfPageFormat.a4,
           build: (context) {
             return pw.Expanded(
-              child:
-                  pw.Image(pw.MemoryImage(screenShot), fit: pw.BoxFit.contain),
+              child: pw.Image(pw.MemoryImage(screenShot), fit: pw.BoxFit.fill),
             );
           },
         ),
@@ -331,120 +359,10 @@ class DetailScreen extends StatelessWidget {
     }
   }
 
-  Widget logEntryItem(
-    int index,
-    int notes_index,
-    BuildContext context,
-    DailyReportsState state,
-    bool status,
-    bool signatureStatus,
-    bool headerStatus,
-    UserCubit userProvider,
-  ) {
-    return Column(
-      children: [
-        status
-            ? state.tempdailyreports[index].logs[notes_index].logo != null
-                ? Column(
-                    children: [
-                      Text(
-                          "${state.tempdailyreports[index].logs[notes_index].company.toString()}"),
-                      // CircleAvatar(
-                      //   radius: 40,
-                      //   backgroundImage: MemoryImage(Uint8List.fromList(state
-                      //       .tempdailyreports[index]
-                      //       .logs[notes_index]
-                      //       .logo!
-                      //       .codeUnits)),
-                      // ),
-                      header(userProvider, state, index, logIndex: notes_index),
-                      const SizedBox(
-                        height: 15,
-                      ),
-                    ],
-                  )
-                : Text(
-                    "${state.tempdailyreports[index].logs[notes_index].company.toString()}")
-            : const Padding(padding: EdgeInsets.zero),
-        const SizedBox(
-          height: 10,
-        ),
-        Stack(
-          children: [
-            Positioned(
-              bottom: 20,
-              top: 20,
-              right: 20,
-              left: 20,
-              child:
-                  state.tempdailyreports[index].logs[notes_index].logo != null
-                      ? Container(
-                          height: 100,
-                          width: 100,
-                          child: ImageFiltered(
-                            imageFilter: ImageFilter.blur(sigmaY: 5, sigmaX: 5),
-                            child: Image.memory(
-                              Uint8List.fromList(state.tempdailyreports[index]
-                                  .logs[notes_index].logo!.codeUnits),
-                              fit: BoxFit.fill,
-                              gaplessPlayback: true,
-                            ),
-                          ),
-                        )
-                      : const Padding(
-                          padding: EdgeInsets.zero,
-                        ),
-            ),
-            ListTile(
-              leading: Text(
-                "${state.tempdailyreports[index].logs[notes_index].timeCreated.toString()} |",
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
-                ),
-              ),
-              title: state.tempdailyreports[index].logs[notes_index].isline!
-                  ? Text(
-                      state.tempdailyreports[index].logs[notes_index].log
-                          .toString(),
-                      style: TextStyle(decoration: TextDecoration.lineThrough),
-                    )
-                  : Text(state.tempdailyreports[index].logs[notes_index].log
-                      .toString()),
-            ),
-          ],
-        ),
-        signatureStatus
-            ? signature(state, index)
-            : const Padding(padding: EdgeInsets.zero),
-        signatureStatus
-            ? Column(
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      mytext("Page ", (pageNumber).toString()),
-                    ],
-                  ),
-                  const Divider()
-                ],
-              )
-            : const Padding(padding: EdgeInsets.zero),
-        // headerStatus
-        //     ? Padding(
-        //         padding: const EdgeInsets.only(top: 16.0),
-        //         child:
-        //             header(userProvider, state, index, logIndex: notes_index),
-        //       )
-        //     : const Padding(padding: EdgeInsets.zero)
-      ],
-    );
-  }
-
-  Text mytext(String title, String text) {
+  Text mytext(String title, String text, BuildContext context) {
     return Text(
       "$title $text",
-      style: TextStyle(fontFamily: "Poppins", fontWeight: FontWeight.bold),
+      style: TextStyle(fontFamily: context.read<UserCubit>().state.font),
     );
   }
 

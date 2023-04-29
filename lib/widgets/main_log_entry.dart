@@ -7,7 +7,9 @@ import 'package:flutter_complete_guide/Bloc/DailyReportNotes/dailyreports_cubit.
 import 'package:flutter_complete_guide/Bloc/User/userCubit.dart';
 import 'package:flutter_complete_guide/comm/genTextFormField.dart';
 import 'package:flutter_complete_guide/models/UserModel.dart';
+import 'package:flutter_complete_guide/models/company_model.dart';
 import 'package:flutter_complete_guide/widgets/main_drawer.dart';
+import 'package:flutter_complete_guide/widgets/search.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../DatabaseHandler/DbHelper.dart';
@@ -127,8 +129,36 @@ class _MainLogEntryState extends State<MainLogEntry> {
     await db.getAllCompany().then((value) {
       companyProvider!.setlstCompany(value);
       if (companyProvider!.state.lstcompany!.length > 0) {
-        BlocProvider.of<CompanyCubit>(context)
-            .setCompany(companyProvider!.state.lstcompany![0]);
+        Company? company;
+        companyProvider!.state.company = null;
+
+        for (int z = 0; z < companyProvider!.state.lstcompany!.length; z++) {
+          for (int k = 0;
+              k < companyProvider!.state.lstcompany![z].lstShifts.length;
+              k++) {
+            String startTime = companyProvider!
+                .state.lstcompany![z].lstShifts[k]
+                .split('-')[0];
+            String endTime = companyProvider!.state.lstcompany![z].lstShifts[k]
+                .split('-')[1];
+            DateTime stime = DateFormat.jm().parse(
+                "${startTime.split(':')[0]}:00 ${startTime.split(' ')[1]}");
+            DateTime etime = DateFormat.jm()
+                .parse("${endTime.split(':')[0]}:00 ${endTime.split(' ')[1]}");
+            String tempTime = DateTime.now().toString().split(' ')[1];
+            DateTime time = DateTime.parse("1970-01-01 $tempTime");
+            if (endTime.split(' ')[1] == 'AM') {
+              etime = etime.add(Duration(days: 1));
+            }
+            if (stime.compareTo(time) < 0) {
+              if (etime.compareTo(time) > 0) {
+                BlocProvider.of<CompanyCubit>(context)
+                    .setCompany(companyProvider!.state.lstcompany![z]);
+                break;
+              }
+            }
+          }
+        }
       }
     });
     if (BlocProvider.of<DailyReportsCubit>(context).state.location == "" ||
@@ -142,6 +172,7 @@ class _MainLogEntryState extends State<MainLogEntry> {
         BlocProvider.of<DailyReportsCubit>(context).state.weather == "") {
       showDialog(
           context: context,
+          barrierDismissible: false,
           builder: ((context) => AlertDialog(
                 title: Text("No Internet"),
                 clipBehavior: Clip.none,
@@ -493,8 +524,9 @@ class _MainLogEntryState extends State<MainLogEntry> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 GestureDetector(
-                  child: const Icon(CupertinoIcons.add),
-                  onTap: () => _startNewLogEntry(context),
+                  child: const Icon(CupertinoIcons.search),
+                  onTap: () =>
+                      Navigator.pushNamed(context, SearchScreen.routeName),
                 ),
               ],
             ),
@@ -506,9 +538,13 @@ class _MainLogEntryState extends State<MainLogEntry> {
                   TextStyle(fontFamily: context.watch<UserCubit>().state.font),
             ),
             actions: [
-              IconButton(
-                onPressed: () => _startNewLogEntry(context),
-                icon: Icon(Icons.add),
+              GestureDetector(
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: const Icon(CupertinoIcons.search),
+                ),
+                onTap: () =>
+                    Navigator.pushNamed(context, SearchScreen.routeName),
               ),
             ],
           )) as PreferredSizeWidget;
@@ -587,7 +623,7 @@ class _MainLogEntryState extends State<MainLogEntry> {
                   width: MediaQuery.of(context).size.width * 0.15,
                 ),
                 Text(
-                  "Page ${BlocProvider.of<DailyReportsCubit>(context).state.lstdailyreports.length + 1}",
+                  "Page 1",
                   style: TextStyle(
                       fontFamily: context.watch<UserCubit>().state.font),
                 )

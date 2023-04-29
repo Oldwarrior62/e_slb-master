@@ -5,6 +5,7 @@ import 'package:flutter_complete_guide/Bloc/Company/company_cubit.dart';
 import 'package:flutter_complete_guide/DatabaseHandler/DbHelper.dart';
 import 'package:flutter_complete_guide/comm/commHelper.dart';
 import 'package:flutter_complete_guide/models/company_model.dart';
+import 'package:flutter_complete_guide/widgets/company_shift.dart';
 import 'package:flutter_complete_guide/widgets/main_drawer.dart';
 import 'package:image_picker/image_picker.dart';
 import '../Bloc/User/userCubit.dart';
@@ -17,6 +18,7 @@ class AddCompanyScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     TextEditingController companyName = TextEditingController();
     TextEditingController companyEmail = TextEditingController();
+    TextEditingController companyShift = TextEditingController();
     final companyProvider = BlocProvider.of<CompanyCubit>(context);
     XFile? img;
     return Scaffold(
@@ -79,8 +81,16 @@ class AddCompanyScreen extends StatelessWidget {
               ),
               getTextFormField(
                   controller: companyEmail,
-                  icon: Icons.person,
+                  icon: Icons.email,
                   hintName: 'Company Email'),
+              const SizedBox(
+                height: 15,
+              ),
+              getTextFormField(
+                  controller: companyShift,
+                  inputType: TextInputType.number,
+                  icon: Icons.filter_tilt_shift_outlined,
+                  hintName: 'How Many Shifts in a day'),
               const SizedBox(
                 height: 15,
               ),
@@ -89,32 +99,25 @@ class AddCompanyScreen extends StatelessWidget {
                 width: double.infinity,
                 child: TextButton(
                   child: Text(
-                    'Add Company',
+                    'Next',
                     style: TextStyle(color: Colors.white),
                   ),
-                  onPressed: () async {
-                    DbHelper db = DbHelper.instance;
-                    if (companyName.text.isNotEmpty) {
-                      Company company = Company(
-                          companyEmail: companyEmail.text,
-                          companyName: companyName.text,
-                          image: context.read<CompanyCubit>().state.img == null
-                              ? null
-                              : String.fromCharCodes(File(context
-                                      .read<CompanyCubit>()
-                                      .state
-                                      .img!
-                                      .path)
-                                  .readAsBytesSync()));
-                      await db.insertCompanyData(company).then((value) {
-                        List<Company> templst =
-                            context.read<CompanyCubit>().state.lstcompany ?? [];
-                        templst.add(company);
-                        context.read<CompanyCubit>().setlstCompany(templst);
-                        alertDialog(context, "Company Added");
-                      });
-                    } else {
-                      alertDialog(context, "Company Name required");
+                  onPressed: () {
+                    if (companyShift.text.isNotEmpty &&
+                        companyEmail.text.isNotEmpty) {
+                      Company company = Company(lstShifts: []);
+                      companyProvider.state.company = company;
+                      companyProvider.state.company!.companyEmail =
+                          companyEmail.text;
+                      companyProvider.state.company!.companyName =
+                          companyName.text;
+                      companyProvider.state.company!.image =
+                          String.fromCharCodes(
+                              File(context.read<CompanyCubit>().state.img!.path)
+                                  .readAsBytesSync());
+                      companyProvider.state.company!.companyId =
+                          int.parse(companyShift.text);
+                      Navigator.pushNamed(context, AddCompanyShift.routeName);
                     }
                   },
                 ),

@@ -16,6 +16,7 @@ import 'package:flutter_complete_guide/widgets/loginForm.dart';
 import 'package:flutter_complete_guide/widgets/main_log_entry.dart';
 import 'package:flutter_complete_guide/widgets/signature.dart';
 import 'package:flutter_complete_guide/widgets/updateProfile.dart';
+import 'package:flutter_complete_guide/widgets/update_company_shifts.dart';
 import 'package:flutter_complete_guide/widgets/view_notes.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -32,6 +33,7 @@ class MainDrawer extends StatefulWidget {
 }
 
 class _MainDrawerState extends State<MainDrawer> {
+  GlobalKey _key = GlobalKey();
   List<DropdownMenuItem<Company>> getitems() {
     return widget.lstcompany
         .map((e) => DropdownMenuItem(
@@ -61,6 +63,7 @@ class _MainDrawerState extends State<MainDrawer> {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
+      key: _key,
       child: Drawer(
         child: ListView(
           children: [
@@ -166,31 +169,33 @@ class _MainDrawerState extends State<MainDrawer> {
               Navigator.of(context)
                   .pushReplacementNamed(AddCompanyScreen.routeName);
             }),
-            BlocBuilder<CompanyCubit, CompanyState>(builder: (context, state) {
-              return Padding(
-                padding: const EdgeInsets.only(left: 20.0, right: 30),
-                child: DropdownButtonHideUnderline(
-                  child: DropdownButtonFormField<Company>(
-                    decoration: InputDecoration(
-                        border: OutlineInputBorder(),
-                        labelText: "Select Company"),
-                    isExpanded: true,
-                    items: getitems(),
-                    onChanged: (value) {
-                      context.read<CompanyCubit>().setCompany(value!);
-                    },
-                    value: state.company,
-                  ),
-                ),
-              );
+            _buildListTile('Update Company Shift', Icons.update, () {
+              Navigator.of(context)
+                  .pushReplacementNamed(UpdateCompanyShifts.routeName);
             }),
+            // BlocBuilder<CompanyCubit, CompanyState>(builder: (context, state) {
+            //   return Padding(
+            //     padding: const EdgeInsets.only(left: 20.0, right: 30),
+            //     child: DropdownButtonHideUnderline(
+            //       child: DropdownButtonFormField<Company>(
+            //         decoration: InputDecoration(
+            //             border: OutlineInputBorder(),
+            //             labelText: "Select Company"),
+            //         isExpanded: true,
+            //         items: getitems(),
+            //         onChanged: (value) {
+            //           context.read<CompanyCubit>().setCompany(value!);
+            //         },
+            //         value: state.company,
+            //       ),
+            //     ),
+            //   );
+            // }),
+
             _buildListTile('View Notes', Icons.view_agenda, () {
               Navigator.of(context).pushReplacementNamed(ViewNotes.routeName);
             }),
-            _buildListTile('Signature', Icons.verified, () {
-              Navigator.of(context)
-                  .pushReplacementNamed(SignatureScreen.routeName);
-            }),
+
             _buildListTile('Get Location', Icons.map, () {
               Navigator.of(context).pushReplacementNamed(GetLocation.routeName);
             }),

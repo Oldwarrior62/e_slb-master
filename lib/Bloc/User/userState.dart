@@ -1,6 +1,7 @@
 // ignore_for_file: must_be_immutable
 
 import 'package:equatable/equatable.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_complete_guide/models/UserModel.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:image_picker/image_picker.dart';
@@ -17,7 +18,8 @@ class UserState extends Equatable {
         isWarning,
         font,
         position,
-        isUpdate
+        isUpdate,
+        signatureType
       ];
 
   UserModel? userModel;
@@ -30,6 +32,8 @@ class UserState extends Equatable {
   String font;
   Position? position;
   bool? isUpdate;
+  String? signatureType;
+  Uint8List? signatureImage;
   UserState(
       {this.userModel,
       required this.islisence,
@@ -40,29 +44,34 @@ class UserState extends Equatable {
       required this.isWarning,
       required this.font,
       this.position,
-      required this.isUpdate});
+      required this.isUpdate,
+      this.signatureType});
 
-  UserState copywith(
-      {UserModel? userModel,
-      bool? islisence,
-      XFile? img,
-      bool? isDyslexic,
-      bool? securityWarning,
-      bool? ofaWarning,
-      bool? isWarning,
-      String? font,
-      Position? position,
-      bool? isupdate}) {
+  UserState copywith({
+    UserModel? userModel,
+    bool? islisence,
+    XFile? img,
+    bool? isDyslexic,
+    bool? securityWarning,
+    bool? ofaWarning,
+    bool? isWarning,
+    String? font,
+    Position? position,
+    bool? isupdate,
+    String? signatureType,
+  }) {
     return UserState(
-        userModel: userModel ?? this.userModel,
-        img: img ?? this.img,
-        islisence: islisence ?? this.islisence,
-        isDyslexic: isDyslexic ?? this.isDyslexic,
-        securityWarning: securityWarning ?? this.securityWarning,
-        ofaWarning: ofaWarning ?? this.ofaWarning,
-        isWarning: isWarning ?? this.isWarning,
-        font: font ?? this.font,
-        position: position ?? this.position,
-        isUpdate: isupdate ?? this.isUpdate);
+      userModel: userModel ?? this.userModel,
+      img: img ?? this.img,
+      islisence: islisence ?? this.islisence,
+      isDyslexic: isDyslexic ?? this.isDyslexic,
+      securityWarning: securityWarning ?? this.securityWarning,
+      ofaWarning: ofaWarning ?? this.ofaWarning,
+      isWarning: isWarning ?? this.isWarning,
+      font: font ?? this.font,
+      position: position ?? this.position,
+      isUpdate: isupdate ?? this.isUpdate,
+      signatureType: signatureType ?? this.signatureType,
+    );
   }
 }

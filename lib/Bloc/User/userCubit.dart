@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_complete_guide/Bloc/User/userState.dart';
 import 'package:flutter_complete_guide/models/UserModel.dart';
@@ -46,6 +47,10 @@ class UserCubit extends Cubit<UserState> {
 
   setSecurityWarning(bool warn) {
     emit(state.copywith(securityWarning: warn));
+  }
+
+  setSignatureType(String type) {
+    emit(state.copywith(signatureType: type));
   }
 
   setOfaWarning(bool warn) {

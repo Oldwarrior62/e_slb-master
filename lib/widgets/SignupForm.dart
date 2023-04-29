@@ -5,6 +5,9 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_complete_guide/Bloc/User/userCubit.dart';
+import 'package:flutter_complete_guide/Bloc/User/userState.dart';
+import 'package:flutter_complete_guide/models/user_model.dart';
+import 'package:flutter_complete_guide/widgets/signature.dart';
 import 'package:image_picker/image_picker.dart';
 import '../comm/commHelper.dart';
 import '../DatabaseHandler/DbHelper.dart';
@@ -47,26 +50,29 @@ class _SignupFormState extends State<SignupForm> {
       } else if (passwd.length != 4) {
         alertDialog(context, "Password must be 4 digit");
       } else if (img != null) {
-        _formKey.currentState?.save();
-        DbHelper db = DbHelper.instance;
-        await db.database;
-        UserModel uModel = UserModel(
-            name: name,
-            surname: surname,
-            email: email,
-            password: passwd,
-            image: String.fromCharCodes(File(img!.path).readAsBytesSync()),
-            isLogin: "true");
-        db.saveData(uModel).then(
-          (value) {
-            if (value == -1) {
-              alertDialog(context, "User already Exists");
-            } else {
-              Navigator.pushReplacement(
-                  context, MaterialPageRoute(builder: (_) => LoginForm()));
-            }
-          },
-        );
+        if (context.read<UserCubit>().state.userModel?.signature != null) {
+          _formKey.currentState?.save();
+          DbHelper db = DbHelper.instance;
+          await db.database;
+
+          context.read<UserCubit>().state.userModel?.name = name;
+          context.read<UserCubit>().state.userModel?.surname = surname;
+          context.read<UserCubit>().state.userModel?.email = email;
+          context.read<UserCubit>().state.userModel?.password = passwd;
+          context.read<UserCubit>().state.userModel?.image =
+              String.fromCharCodes(File(img!.path).readAsBytesSync());
+          context.read<UserCubit>().state.userModel?.isLogin = "true";
+          db.saveData(context.read<UserCubit>().state.userModel!).then(
+            (value) {
+              if (value == -1) {
+                alertDialog(context, "User already Exists");
+              } else {
+                Navigator.pushReplacement(
+                    context, MaterialPageRoute(builder: (_) => LoginForm()));
+              }
+            },
+          );
+        }
       } else {
         alertDialog(context, "Select Image");
       }
@@ -153,8 +159,30 @@ class _SignupFormState extends State<SignupForm> {
                     isObscureText: true,
                     inputType: TextInputType.number,
                   ),
+                  BlocBuilder<UserCubit, UserState>(
+                      builder: ((context, state) => Container(
+                            margin: const EdgeInsets.all(30.0),
+                            width: double.infinity,
+                            decoration: BoxDecoration(
+                              color: Colors.blue,
+                              borderRadius: BorderRadius.circular(30.0),
+                            ),
+                            child: TextButton(
+                              onPressed: setSignature,
+                              child: Text(
+                                state.userModel?.signature == null
+                                    ? 'Set Signature'
+                                    : "Signature Saved",
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontFamily:
+                                        context.watch<UserCubit>().state.font),
+                              ),
+                            ),
+                          ))),
                   Container(
-                    margin: const EdgeInsets.all(30.0),
+                    margin: const EdgeInsets.only(
+                        left: 30.0, right: 30.0, bottom: 30.0),
                     width: double.infinity,
                     decoration: BoxDecoration(
                       color: Colors.blue,
@@ -203,5 +231,55 @@ class _SignupFormState extends State<SignupForm> {
         ),
       ),
     );
+  }
+
+  setSignature() {
+    showModalBottomSheet(
+        context: context,
+        builder: ((context) => Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(
+                    "Signature",
+                    style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: context.watch<UserCubit>().state.font),
+                  ),
+                ),
+                InkWell(
+                  onTap: () {
+                    context.read<UserCubit>().setSignatureType("Draw");
+                    Navigator.pushNamed(context, SignatureScreen.routeName);
+                  },
+                  child: ListTile(
+                    title: Text("Draw"),
+                  ),
+                ),
+                const Divider(),
+                InkWell(
+                  onTap: () {
+                    context.read<UserCubit>().setSignatureType("LeftCursive");
+                    Navigator.pushNamed(context, SignatureScreen.routeName);
+                  },
+                  child: ListTile(
+                    title: Text("Left Cursive"),
+                  ),
+                ),
+                const Divider(),
+                InkWell(
+                  onTap: () {
+                    context.read<UserCubit>().setSignatureType("RightCursive");
+                    Navigator.pushNamed(context, SignatureScreen.routeName);
+                  },
+                  child: ListTile(
+                    title: Text("Right Cursive"),
+                  ),
+                ),
+                const Divider(),
+              ],
+            )));
   }
 }

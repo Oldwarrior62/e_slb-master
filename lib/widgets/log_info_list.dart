@@ -1,8 +1,6 @@
 // ignore_for_file: must_be_immutable
 
 import 'dart:typed_data';
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_complete_guide/Bloc/Company/company_cubit.dart';
@@ -21,7 +19,8 @@ class LogInfoList extends StatelessWidget {
     return BlocBuilder<DailyReportsCubit, DailyReportsState>(
         builder: (context, state) {
       return Container(
-        child: state.lstdailyreports.isEmpty
+        child: state.lstdailyreports.isEmpty ||
+                context.read<CompanyCubit>().state.company == null
             ? Column(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
@@ -39,113 +38,102 @@ class LogInfoList extends StatelessWidget {
                 children: [
                   BlocBuilder<CompanyCubit, CompanyState>(
                       builder: (context, state) {
-                    return Positioned(
-                      bottom: MediaQuery.of(context).size.height * 0.2,
-                      top: MediaQuery.of(context).size.height * 0.1,
-                      right: MediaQuery.of(context).size.width * 0.20,
-                      left: MediaQuery.of(context).size.width < 400
-                          ? MediaQuery.of(context).size.width * 0.30
-                          : MediaQuery.of(context).size.width * 0.20,
-                      child: state.img != null
-                          ? ClipRRect(
-                              borderRadius: BorderRadius.circular(99),
-                              child: Container(
-                                height: 100,
-                                width: 100,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(99),
-                                ),
-                                child: ColorFiltered(
-                                  colorFilter: ColorFilter.mode(
-                                      Colors.black.withOpacity(0.2),
-                                      BlendMode.dstATop),
-                                  child: Image.memory(
-                                    Uint8List.fromList(
-                                        state.company!.image!.codeUnits),
-                                    fit: BoxFit.fill,
-                                    gaplessPlayback: true,
+                    return Center(
+                      child: Positioned(
+                        child: state.company!.image != null
+                            ? ClipRRect(
+                                borderRadius: BorderRadius.circular(99),
+                                child: Container(
+                                  height: 150,
+                                  width: 150,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(99),
+                                  ),
+                                  child: ColorFiltered(
+                                    colorFilter: ColorFilter.mode(
+                                        Colors.black.withOpacity(0.2),
+                                        BlendMode.dstATop),
+                                    child: Image.memory(
+                                      Uint8List.fromList(
+                                          state.company!.image!.codeUnits),
+                                      fit: BoxFit.fill,
+                                      gaplessPlayback: true,
+                                    ),
                                   ),
                                 ),
+                              )
+                            : const Padding(
+                                padding: EdgeInsets.zero,
                               ),
-                            )
-                          : const Padding(
-                              padding: EdgeInsets.zero,
-                            ),
+                      ),
                     );
                   }),
-                  ListView(
-                    physics: const BouncingScrollPhysics(),
-                    shrinkWrap: true,
-                    children: [
-                      ListView.builder(
-                        physics: const BouncingScrollPhysics(),
-                        shrinkWrap: true,
-                        itemBuilder: (ctx, index) {
-                          return ListView.builder(
-                              physics: const BouncingScrollPhysics(),
-                              shrinkWrap: true,
-                              itemCount:
-                                  state.lstdailyreports[index].logs.length,
-                              itemBuilder: (context, notes_index) {
-                                return Column(
-                                  children: [
-                                    logEntryItem(index, notes_index,
-                                        curScaleFactor, context, state),
-                                    Divider(
-                                      indent: 20,
-                                      endIndent: 20,
-                                      height: 0.8,
-                                      thickness: 2,
-                                    )
-                                  ],
-                                );
-                              });
-                        },
-                        itemCount: state.lstdailyreports.length,
-                      ),
-                      const SizedBox(
-                        height: 140,
-                      )
-                    ],
-                  ),
+                  state.dailyReportNotes == null
+                      ? const Padding(padding: EdgeInsets.zero)
+                      : ListView(
+                          physics: const BouncingScrollPhysics(),
+                          shrinkWrap: true,
+                          children: [
+                            ListView.builder(
+                                physics: const BouncingScrollPhysics(),
+                                shrinkWrap: true,
+                                itemCount: state.dailyReportNotes!.logs.length,
+                                itemBuilder: (context, notes_index) {
+                                  return Column(
+                                    children: [
+                                      logEntryItem(notes_index, curScaleFactor,
+                                          context, state),
+                                      Divider(
+                                        indent: 20,
+                                        endIndent: 20,
+                                        height: 0.8,
+                                        thickness: 2,
+                                      )
+                                    ],
+                                  );
+                                }),
+                            const SizedBox(
+                              height: 140,
+                            )
+                          ],
+                        ),
                 ],
               ),
       );
     });
   }
 
-  ListTile logEntryItem(int index, int notes_index, double curScaleFactor,
+  ListTile logEntryItem(int notes_index, double curScaleFactor,
       BuildContext context, DailyReportsState state) {
     return ListTile(
         leading: Text(
-          "${state.lstdailyreports[index].logs[notes_index].timeCreated.toString()} |",
+          "${state.dailyReportNotes!.logs[notes_index].timeCreated.toString()} |",
           style: TextStyle(
             fontWeight: FontWeight.bold,
             fontSize: 16 * curScaleFactor,
           ),
         ),
-        title: state.lstdailyreports[index].logs[notes_index].isline!
+        title: state.dailyReportNotes!.logs[notes_index].isline!
             ? Text(
-                state.lstdailyreports[index].logs[notes_index].log.toString(),
+                state.dailyReportNotes!.logs[notes_index].log.toString(),
                 style: TextStyle(decoration: TextDecoration.lineThrough),
               )
-            : Text(
-                state.lstdailyreports[index].logs[notes_index].log.toString()),
+            : Text(state.dailyReportNotes!.logs[notes_index].log.toString()),
         trailing: IconButton(
             onPressed: () async {
               DbHelper db = DbHelper.instance;
-              state.lstdailyreports[index].logs[notes_index].isline =
-                  !state.lstdailyreports[index].logs[notes_index].isline!;
+              state.dailyReportNotes!.logs[notes_index].isline =
+                  !state.dailyReportNotes!.logs[notes_index].isline!;
               List<DailyReportNotes> templst = state.lstdailyreports;
               await db
-                  .updateDailyReportNotes(state.lstdailyreports[index])
+                  .updateDailyReportNotes(state.dailyReportNotes!)
                   .then((value) {
                 BlocProvider.of<DailyReportsCubit>(context).setListDailyReports(
                     templst,
                     BlocProvider.of<DailyReportsCubit>(context).state.log);
               });
             },
-            icon: state.lstdailyreports[index].logs[notes_index].isline!
+            icon: state.dailyReportNotes!.logs[notes_index].isline!
                 ? Icon(
                     Icons.cancel,
                     color: Colors.grey,

@@ -46,7 +46,7 @@ Future<String> getAddressFromLatLng(
       if (place.thoroughfare == "") {
         if (place2.street != place.subLocality) {
           currentLocation =
-              "${place2.street},${place.subLocality},${place.locality},${place.administrativeArea}";
+              "${place2.street},${placemarks[3].name},${place.locality},${place.administrativeArea}";
         } else {
           currentLocation =
               "${placemarks[3].name},${place.subLocality},${place.locality},${place.administrativeArea}";

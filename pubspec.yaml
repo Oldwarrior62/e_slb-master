@@ -114,6 +114,13 @@ flutter:
         - asset: lib/fonts/Cursiv-all hail julia.ttf
         - asset: lib/fonts/Cursiv-KGTheFighter.ttf
           weight: 700
+    - family: Lucida
+      fonts:
+        - asset: lib/fonts/LHANDW.TTF
+        - asset: lib/fonts/Lucida Handwriting Italic.ttf
+        - asset: lib/fonts/qkmarisa.ttf
+        - asset: lib/fonts/Paddy.ttf
+          weight: 700
   #   - family: OpenSans
   #     fonts:
   #       - asset: assets/fonts/QuickSand-Regular.ttf

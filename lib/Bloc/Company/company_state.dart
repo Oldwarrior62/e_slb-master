@@ -8,15 +8,39 @@ class CompanyState extends Equatable {
   Company? company;
   XFile? img;
   List<Company>? lstcompany = [];
-  CompanyState({this.company, this.img, this.lstcompany});
+  String? selectedStartTime;
+  String? selectedEndTime;
+  int? selectedIndex;
+  CompanyState(
+      {this.company,
+      this.img,
+      this.lstcompany,
+      this.selectedStartTime,
+      this.selectedEndTime,
+      this.selectedIndex});
   @override
-  List<Object?> get props => [company, img, lstcompany];
+  List<Object?> get props => [
+        company,
+        img,
+        lstcompany,
+        selectedStartTime,
+        selectedEndTime,
+        selectedIndex
+      ];
 
   CompanyState copywith(
-      {Company? company, XFile? img, List<Company>? lstcompany}) {
+      {Company? company,
+      XFile? img,
+      List<Company>? lstcompany,
+      String? selectedStartTime,
+      String? selectedEndTime,
+      int? selectedIndex}) {
     return CompanyState(
         company: company ?? this.company,
         img: img ?? this.img,
-        lstcompany: lstcompany ?? this.lstcompany);
+        lstcompany: lstcompany ?? this.lstcompany,
+        selectedStartTime: selectedStartTime ?? selectedStartTime,
+        selectedEndTime: selectedEndTime ?? selectedEndTime,
+        selectedIndex: selectedIndex ?? selectedIndex);
   }
 }

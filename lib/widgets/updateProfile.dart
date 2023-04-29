@@ -8,10 +8,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_complete_guide/Bloc/Company/company_cubit.dart';
 import 'package:flutter_complete_guide/Bloc/User/userCubit.dart';
+import 'package:flutter_complete_guide/Bloc/User/userState.dart';
 import 'package:flutter_complete_guide/DatabaseHandler/DbHelper.dart';
 import 'package:flutter_complete_guide/comm/commHelper.dart';
 import 'package:flutter_complete_guide/models/UserModel.dart';
 import 'package:flutter_complete_guide/widgets/main_drawer.dart';
+import 'package:flutter_complete_guide/widgets/signature.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -185,6 +187,31 @@ class UpdateProfile extends StatelessWidget {
                   child: SecurityExpiry(),
                 ),
                 SizedBox(height: 10.0),
+                BlocBuilder<UserCubit, UserState>(
+                    builder: ((context, state) => Container(
+                          margin: const EdgeInsets.only(
+                              left: 20.0, right: 20.0, top: 20.0),
+                          width: double.infinity,
+                          decoration: BoxDecoration(
+                            color: Colors.blue,
+                            borderRadius: BorderRadius.circular(30.0),
+                          ),
+                          child: TextButton(
+                            onPressed: () {
+                              return setSignature(context);
+                            },
+                            child: Text(
+                              state.userModel?.signature == null
+                                  ? 'Set Signature'
+                                  : "Signature Saved",
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontFamily:
+                                      context.watch<UserCubit>().state.font),
+                            ),
+                          ),
+                        ))),
+
                 Container(
                   margin: EdgeInsets.all(20.0),
                   width: double.infinity,
@@ -252,6 +279,56 @@ class UpdateProfile extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  setSignature(BuildContext context) {
+    showModalBottomSheet(
+        context: context,
+        builder: ((context) => Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(
+                    "Signature",
+                    style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: context.watch<UserCubit>().state.font),
+                  ),
+                ),
+                InkWell(
+                  onTap: () {
+                    context.read<UserCubit>().setSignatureType("Draw");
+                    Navigator.pushNamed(context, SignatureScreen.routeName);
+                  },
+                  child: ListTile(
+                    title: Text("Draw"),
+                  ),
+                ),
+                const Divider(),
+                InkWell(
+                  onTap: () {
+                    context.read<UserCubit>().setSignatureType("LeftCursive");
+                    Navigator.pushNamed(context, SignatureScreen.routeName);
+                  },
+                  child: ListTile(
+                    title: Text("Left Cursive"),
+                  ),
+                ),
+                const Divider(),
+                InkWell(
+                  onTap: () {
+                    context.read<UserCubit>().setSignatureType("RightCursive");
+                    Navigator.pushNamed(context, SignatureScreen.routeName);
+                  },
+                  child: ListTile(
+                    title: Text("Right Cursive"),
+                  ),
+                ),
+                const Divider(),
+              ],
+            )));
   }
 
   Builder SecurityExpiry() {
