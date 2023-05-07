@@ -6,13 +6,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_complete_guide/Bloc/User/userCubit.dart';
 import 'package:flutter_complete_guide/Bloc/User/userState.dart';
-import 'package:flutter_complete_guide/models/user_model.dart';
 import 'package:flutter_complete_guide/widgets/signature.dart';
 import 'package:image_picker/image_picker.dart';
 import '../comm/commHelper.dart';
 import '../DatabaseHandler/DbHelper.dart';
 import '../comm/genTextFormField.dart';
-import '../models/UserModel.dart';
 import 'loginForm.dart';
 
 class SignupForm extends StatefulWidget {

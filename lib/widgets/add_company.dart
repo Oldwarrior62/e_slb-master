@@ -2,8 +2,6 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_complete_guide/Bloc/Company/company_cubit.dart';
-import 'package:flutter_complete_guide/DatabaseHandler/DbHelper.dart';
-import 'package:flutter_complete_guide/comm/commHelper.dart';
 import 'package:flutter_complete_guide/models/company_model.dart';
 import 'package:flutter_complete_guide/widgets/company_shift.dart';
 import 'package:flutter_complete_guide/widgets/main_drawer.dart';

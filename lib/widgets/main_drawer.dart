@@ -5,22 +5,18 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_complete_guide/Bloc/Company/company_state.dart';
 import 'package:flutter_complete_guide/Bloc/User/userCubit.dart';
 import 'package:flutter_complete_guide/models/UserModel.dart';
-import 'package:flutter_complete_guide/models/user_model.dart';
 
 import 'package:flutter_complete_guide/widgets/add_company.dart';
 import 'package:flutter_complete_guide/widgets/google_map.dart';
 import 'package:flutter_complete_guide/widgets/loginForm.dart';
 import 'package:flutter_complete_guide/widgets/main_log_entry.dart';
-import 'package:flutter_complete_guide/widgets/signature.dart';
 import 'package:flutter_complete_guide/widgets/updateProfile.dart';
 import 'package:flutter_complete_guide/widgets/update_company_shifts.dart';
 import 'package:flutter_complete_guide/widgets/view_notes.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../Bloc/Company/company_cubit.dart';
 import '../appendices/main_appendices.dart';
 import '../models/company_model.dart';
 import 'detail.dart';

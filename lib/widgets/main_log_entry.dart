@@ -7,7 +7,6 @@ import 'package:flutter_complete_guide/Bloc/DailyReportNotes/dailyreports_cubit.
 import 'package:flutter_complete_guide/Bloc/User/userCubit.dart';
 import 'package:flutter_complete_guide/comm/genTextFormField.dart';
 import 'package:flutter_complete_guide/models/UserModel.dart';
-import 'package:flutter_complete_guide/models/company_model.dart';
 import 'package:flutter_complete_guide/widgets/main_drawer.dart';
 import 'package:flutter_complete_guide/widgets/search.dart';
 import 'package:intl/intl.dart';
@@ -129,36 +128,8 @@ class _MainLogEntryState extends State<MainLogEntry> {
     await db.getAllCompany().then((value) {
       companyProvider!.setlstCompany(value);
       if (companyProvider!.state.lstcompany!.length > 0) {
-        Company? company;
-        companyProvider!.state.company = null;
-
-        for (int z = 0; z < companyProvider!.state.lstcompany!.length; z++) {
-          for (int k = 0;
-              k < companyProvider!.state.lstcompany![z].lstShifts.length;
-              k++) {
-            String startTime = companyProvider!
-                .state.lstcompany![z].lstShifts[k]
-                .split('-')[0];
-            String endTime = companyProvider!.state.lstcompany![z].lstShifts[k]
-                .split('-')[1];
-            DateTime stime = DateFormat.jm().parse(
-                "${startTime.split(':')[0]}:00 ${startTime.split(' ')[1]}");
-            DateTime etime = DateFormat.jm()
-                .parse("${endTime.split(':')[0]}:00 ${endTime.split(' ')[1]}");
-            String tempTime = DateTime.now().toString().split(' ')[1];
-            DateTime time = DateTime.parse("1970-01-01 $tempTime");
-            if (endTime.split(' ')[1] == 'AM') {
-              etime = etime.add(Duration(days: 1));
-            }
-            if (stime.compareTo(time) < 0) {
-              if (etime.compareTo(time) > 0) {
-                BlocProvider.of<CompanyCubit>(context)
-                    .setCompany(companyProvider!.state.lstcompany![z]);
-                break;
-              }
-            }
-          }
-        }
+        BlocProvider.of<CompanyCubit>(context)
+            .setCompany(companyProvider!.state.lstcompany![0]);
       }
     });
     if (BlocProvider.of<DailyReportsCubit>(context).state.location == "" ||

@@ -68,34 +68,34 @@ class MyApp extends StatelessWidget {
               ? ThemeData(
                   fontFamily: 'OpenDyslexic',
                   textTheme: ThemeData.light().textTheme.copyWith(
-                        subtitle1: TextStyle(
+                        titleMedium: TextStyle(
                           fontFamily: 'OpenDyslexic',
                           fontWeight: FontWeight.bold,
                           fontSize: 18,
                         ),
-                        button: TextStyle(color: Colors.white),
+                        labelLarge: TextStyle(color: Colors.white),
                       ),
                   appBarTheme: AppBarTheme(
                     toolbarTextStyle: ThemeData.light()
                         .textTheme
                         .copyWith(
-                          subtitle2: TextStyle(
+                          titleSmall: TextStyle(
                             fontFamily: 'OpenDyslexic',
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
                           ),
                         )
-                        .bodyText2,
+                        .bodyMedium,
                     titleTextStyle: ThemeData.light()
                         .textTheme
                         .copyWith(
-                          subtitle2: TextStyle(
+                          titleSmall: TextStyle(
                             fontFamily: 'OpenDyslexic',
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
                           ),
                         )
-                        .headline6,
+                        .titleLarge,
                   ),
                   colorScheme:
                       ColorScheme.fromSwatch(primarySwatch: Colors.blue)
